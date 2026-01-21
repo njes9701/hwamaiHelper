@@ -1,9 +1,0 @@
-/gamerule advance_time true
-/time d
-/time set day
-/gamerule advance_time true
-/gamemode survival
-/gamemode creative
-/gamemode survival
-/gamemode creative
-/gamemode survival
