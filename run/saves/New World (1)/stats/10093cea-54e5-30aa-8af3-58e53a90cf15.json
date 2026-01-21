@@ -1,0 +1,23 @@
+{
+  "stats": {
+    "minecraft:picked_up": {
+      "minecraft:firework_rocket": 34
+    },
+    "minecraft:custom": {
+      "minecraft:time_since_rest": 1017,
+      "minecraft:walk_one_cm": 927,
+      "minecraft:total_world_time": 1017,
+      "minecraft:leave_game": 1,
+      "minecraft:play_time": 1017,
+      "minecraft:time_since_death": 1017,
+      "minecraft:drop": 2
+    },
+    "minecraft:used": {
+      "minecraft:firework_rocket": 31
+    },
+    "minecraft:dropped": {
+      "minecraft:firework_rocket": 34
+    }
+  },
+  "DataVersion": 4671
+}

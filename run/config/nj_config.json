@@ -1,0 +1,133 @@
+{
+  "autoDisableResourcePack": true,
+  "chunkLoadDistance": 10,
+  "enabled": true,
+  "autoReplenishFireworks": false,
+  "openMenuKey": "Ctrl + F",
+  "openWorkstationKey": "Shift + F",
+  "openGetItemKey": "Shift + I",
+  "lastTabIndex": 1,
+  "savedNicknames": [
+    {
+      "name": "存檔",
+      "sections": [
+        {
+          "text": "暱稱awdd",
+          "color": "#3AE011",
+          "color2": "#C10101",
+          "shadowColor": "#F7EFEF",
+          "effect": "gradient"
+        }
+      ]
+    },
+    {
+      "name": "存檔",
+      "sections": [
+        {
+          "text": "暱稱awdd",
+          "color": "#3AE011",
+          "color2": "#FFFFFF",
+          "shadowColor": "#000000",
+          "effect": "gradient"
+        },
+        {
+          "text": "新文字",
+          "color": "#FFFFFF",
+          "color2": "#FFFFFF",
+          "shadowColor": "#000000",
+          "effect": "gradient underlined italic"
+        },
+        {
+          "text": "新文字",
+          "color": "#FFFFFF",
+          "color2": "#FFFFFF",
+          "shadowColor": "#000000",
+          "effect": "italic strikethrough"
+        },
+        {
+          "text": "新文字",
+          "color": "#FFFFFF",
+          "color2": "#FFFFFF",
+          "shadowColor": "#000000",
+          "effect": "underlined obfuscated"
+        }
+      ]
+    },
+    {
+      "name": "存檔",
+      "sections": [
+        {
+          "text": "暱稱awdd",
+          "color": "#3AE011",
+          "color2": "#FFFFFF",
+          "shadowColor": "#000000",
+          "effect": "gradient"
+        },
+        {
+          "text": "新文字",
+          "color": "#FFFFFF",
+          "color2": "#FFFFFF",
+          "shadowColor": "#000000",
+          "effect": "gradient underlined italic"
+        },
+        {
+          "text": "新文字",
+          "color": "#92C404",
+          "color2": "#FFFFFF",
+          "shadowColor": "#E7E1E1",
+          "effect": "italic strikethrough  obfuscated shadow"
+        },
+        {
+          "text": "新文字",
+          "color": "#C71010",
+          "color2": "#DA0A0A",
+          "shadowColor": "#E9E1E1",
+          "effect": "underlined  shadow"
+        }
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "command": "/tpaccept",
+      "key": "ctrl+Y"
+    }
+  ],
+  "nickSections": [
+    {
+      "text": "暱稱awdd",
+      "color": "#3AE011",
+      "color2": "#FFFFFF",
+      "shadowColor": "#000000",
+      "effect": "gradient"
+    },
+    {
+      "text": "新文字",
+      "color": "#FFFFFF",
+      "color2": "#FFFFFF",
+      "shadowColor": "#000000",
+      "effect": "gradient underlined italic"
+    },
+    {
+      "text": "新文字",
+      "color": "#92C404",
+      "color2": "#FFFFFF",
+      "shadowColor": "#000000",
+      "effect": "italic strikethrough  obfuscated shadow"
+    },
+    {
+      "text": "新文字",
+      "color": "#C71010",
+      "color2": "#FFFFFF",
+      "shadowColor": "#000000",
+      "effect": "underlined  shadow"
+    }
+  ],
+  "lastAutoDisableStatus": true,
+  "lastChunkDistance": 10,
+  "hasInitialized": false,
+  "hasInitializedPack": true,
+  "lastSavedNick": "",
+  "selectedColorHex": "#FFFFFF",
+  "lastSelectedEffect": ""
+}

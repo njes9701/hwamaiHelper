@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "hwamaihelper",
+  "version": "${version}",
+  "name": "hwamaiHelper",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/hwamaihelper/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-datagen": [
+      "org.NJ.hwamaihelper.client.HwamaihelperDataGenerator"
+    ],
+    "client": [
+      "org.NJ.hwamaihelper.client.HwamaihelperClient"
+    ],
+    "main": [
+      "org.NJ.hwamaihelper.Hwamaihelper"
+    ]
+  },
+  "mixins": [
+    "hwamaihelper.mixins.json",
+    {
+      "config": "hwamaihelper.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

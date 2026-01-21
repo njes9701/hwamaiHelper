@@ -1,0 +1,18 @@
+{
+  "stats": {
+    "minecraft:picked_up": {
+      "minecraft:rotten_flesh": 1
+    },
+    "minecraft:custom": {
+      "minecraft:time_since_rest": 4412,
+      "minecraft:walk_one_cm": 503,
+      "minecraft:total_world_time": 4412,
+      "minecraft:leave_game": 1,
+      "minecraft:sneak_time": 3,
+      "minecraft:play_time": 4412,
+      "minecraft:jump": 1,
+      "minecraft:time_since_death": 4412
+    }
+  },
+  "DataVersion": 4671
+}
