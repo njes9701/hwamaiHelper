@@ -16,6 +16,7 @@ public class NJConfig {
     public String openMenuKey = "X + F";
     public String openWorkstationKey = "shift + G";
     public String openGetItemKey = "G";
+    public String gameModeWheelKey = "alt";
     
     // 紀錄上次開啟的分頁索引 (0: 指令, 1: 設定, 2: 暱稱)
     public int lastTabIndex = 0;

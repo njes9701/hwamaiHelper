@@ -20,6 +20,7 @@ public class PersonalSettingScreen implements NJTab {
     private KeyBindingComponent openMenuBinding;
     private KeyBindingComponent openWorkstationBinding;
     private KeyBindingComponent openGetItemBinding;
+    private KeyBindingComponent gameModeWheelBinding;
     private ButtonWidget replenishFireworksBtn;
 
     private int screenWidth;
@@ -49,10 +50,15 @@ public class PersonalSettingScreen implements NJTab {
                 "取得物品介面開關", config.openGetItemKey, "G"
         );
 
+        this.gameModeWheelBinding = new KeyBindingComponent(
+                centerX - 100, 155, 200,
+                "遊戲模式切換轉盤", config.gameModeWheelKey, "alt"
+        );
+
         this.replenishFireworksBtn = ButtonWidget.builder(getReplenishText(config), b -> {
             config.autoReplenishFireworks = !config.autoReplenishFireworks;
             b.setMessage(getReplenishText(config));
-        }).dimensions(centerX - 100, 155, 200, 20).build();
+        }).dimensions(centerX - 100, 180, 200, 20).build();
     }
 
     @Override
@@ -65,6 +71,7 @@ public class PersonalSettingScreen implements NJTab {
         openMenuBinding.render(context, mouseX, mouseY, delta);
         openWorkstationBinding.render(context, mouseX, mouseY, delta);
         openGetItemBinding.render(context, mouseX, mouseY, delta);
+        gameModeWheelBinding.render(context, mouseX, mouseY, delta);
         replenishFireworksBtn.render(context, mouseX, mouseY, delta);
 
         if (replenishFireworksBtn.isMouseOver(mouseX, mouseY)) {
@@ -86,7 +93,8 @@ public class PersonalSettingScreen implements NJTab {
         // 修正點：直接傳入整個 click 物件，不要拆開
         if (openMenuBinding.mouseClicked(click)) return true;
         if (openWorkstationBinding.mouseClicked(click)) return true;
-        return openGetItemBinding.mouseClicked(click);
+        if (openGetItemBinding.mouseClicked(click)) return true;
+        return gameModeWheelBinding.mouseClicked(click);
     }
 
     @Override
@@ -94,7 +102,8 @@ public class PersonalSettingScreen implements NJTab {
         // 修正點：直接傳入整個 input 物件
         if (openMenuBinding.keyPressed(input)) return true;
         if (openWorkstationBinding.keyPressed(input)) return true;
-        return openGetItemBinding.keyPressed(input);
+        if (openGetItemBinding.keyPressed(input)) return true;
+        return gameModeWheelBinding.keyPressed(input);
     }
 
     @Override
@@ -102,7 +111,8 @@ public class PersonalSettingScreen implements NJTab {
         // 修正點：直接傳入整個 input 物件
         if (openMenuBinding.keyReleased(input)) return true;
         if (openWorkstationBinding.keyReleased(input)) return true;
-        return openGetItemBinding.keyReleased(input);
+        if (openGetItemBinding.keyReleased(input)) return true;
+        return gameModeWheelBinding.keyReleased(input);
     }
 
     @Override
@@ -114,6 +124,7 @@ public class PersonalSettingScreen implements NJTab {
         config.openMenuKey = openMenuBinding.getValue();
         config.openWorkstationKey = openWorkstationBinding.getValue();
         config.openGetItemKey = openGetItemBinding.getValue();
+        config.gameModeWheelKey = gameModeWheelBinding.getValue();
         NJConfigManager.save();
     }
 

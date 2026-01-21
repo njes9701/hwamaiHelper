@@ -19,6 +19,13 @@ public class KeyBindingHandler {
         NJConfig config = NJConfigManager.getInstance();
         if (config == null) return;
 
+        // --- 新增：遊戲模式切換轉盤 ---
+        String wheelKey = (config.gameModeWheelKey == null || config.gameModeWheelKey.isEmpty()) ? "alt" : config.gameModeWheelKey;
+        if (InputUtils.isBindingPressed(client, wheelKey)) {
+             client.setScreen(new org.NJ.hwamaihelper.client.screens.GameModeWheelScreen());
+             return; // 開啟後直接返回，避免觸發其他按鍵
+        }
+
         // --- 修正 1：動態偵測開啟介面的快捷鍵 ---
         String openKey = (config.openMenuKey == null || config.openMenuKey.isEmpty()) ? "X + F" : config.openMenuKey;
         boolean isOpeningPressed = InputUtils.isBindingPressed(client, openKey);

@@ -1,0 +1,79 @@
+{
+  "autoDisableResourcePack": false,
+  "chunkLoadDistance": 10,
+  "enabled": true,
+  "autoReplenishFireworks": false,
+  "openMenuKey": "Ctrl + F",
+  "openWorkstationKey": "shift + G",
+  "openGetItemKey": "G",
+  "gameModeWheelKey": "alt",
+  "lastTabIndex": 2,
+  "savedNicknames": [
+    {
+      "name": "存檔",
+      "sections": [
+        {
+          "text": "暱稱adawdawd",
+          "color": "#E0A0A0",
+          "color2": "#FFFFFF",
+          "shadowColor": "#CD1717",
+          "effect": "gradient"
+        },
+        {
+          "text": "新文字",
+          "color": "#BF4D4D",
+          "color2": "#FFFFFF",
+          "shadowColor": "#000000",
+          "effect": "rainbow strikethrough underlined"
+        },
+        {
+          "text": "新文字",
+          "color": "#FFFFFF",
+          "color2": "#FFFFFF",
+          "shadowColor": "#000000",
+          "effect": "shadow"
+        }
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "command": "/tpaccept",
+      "key": "ctrl+Y"
+    },
+    {
+      "command": "/spawn",
+      "key": "G"
+    }
+  ],
+  "nickSections": [
+    {
+      "text": "暱稱adawdawd",
+      "color": "#E0A0A0",
+      "color2": "#FFFFFF",
+      "shadowColor": "#CD1717",
+      "effect": "gradient"
+    },
+    {
+      "text": "新文字",
+      "color": "#BF4D4D",
+      "color2": "#FFFFFF",
+      "shadowColor": "#000000",
+      "effect": "rainbow strikethrough underlined"
+    },
+    {
+      "text": "新文字",
+      "color": "#FFFFFF",
+      "color2": "#FFFFFF",
+      "shadowColor": "#000000",
+      "effect": "shadow"
+    }
+  ],
+  "lastAutoDisableStatus": false,
+  "lastChunkDistance": 10,
+  "hasInitialized": false,
+  "hasInitializedPack": true,
+  "lastSavedNick": "",
+  "selectedColorHex": "#FFFFFF",
+  "lastSelectedEffect": ""
+}

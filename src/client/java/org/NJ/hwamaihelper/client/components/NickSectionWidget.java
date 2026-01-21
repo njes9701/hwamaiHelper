@@ -122,7 +122,7 @@ public class NickSectionWidget {
             case "obfuscated" -> Text.of("§kO§r 混淆 (O)");
             case "rainbow" -> Text.of("§b彩虹漸變§r (R)");
             case "gradient" -> Text.of("§6雙色漸層§r (G)");
-            case "shadow" -> Text.of("§8自定義陰影,目前技術問題沒辦法實現預覽陰影§r (SH)");
+            case "shadow" -> Text.of("§8字體陰影§r (SH)");
             default -> Text.of("");
         };
     }
