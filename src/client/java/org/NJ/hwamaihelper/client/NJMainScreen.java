@@ -46,6 +46,11 @@ public class NJMainScreen extends Screen {
         this.addDrawableChild(ButtonWidget.builder(Text.of("指令集"), button -> switchTab(commandListTab))
                 .dimensions(10, 90, 80, 20).build());
 
+        // 華麥地圖
+        this.addDrawableChild(ButtonWidget.builder(Text.of("§b華麥地圖"), button -> {
+            Util.getOperatingSystem().open("https://chunghwamc.com/bluemap/");
+        }).dimensions(10, 200, 80, 20).build());
+
         // 中華麥塊網頁
         this.addDrawableChild(ButtonWidget.builder(Text.of("§d中華麥塊網頁"), button -> Util.getOperatingSystem().open("https://chunghwamc.com/"))
                 .dimensions(10, 225, 80, 20).build());
