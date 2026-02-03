@@ -63,8 +63,25 @@ public class KeyBindingComponent {
             case GLFW.GLFW_KEY_LEFT_CONTROL, GLFW.GLFW_KEY_RIGHT_CONTROL -> "Ctrl";
             case GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_RIGHT_SHIFT -> "Shift";
             case GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_RIGHT_ALT -> "Alt";
-            case GLFW.GLFW_KEY_ENTER, GLFW.GLFW_KEY_KP_ENTER -> "Enter";
+            case GLFW.GLFW_KEY_ENTER -> "Enter";
+            case GLFW.GLFW_KEY_KP_ENTER -> "NumPad_Enter";
             case GLFW.GLFW_KEY_SPACE -> "Space";
+            case GLFW.GLFW_KEY_KP_0 -> "NumPad_0";
+            case GLFW.GLFW_KEY_KP_1 -> "NumPad_1";
+            case GLFW.GLFW_KEY_KP_2 -> "NumPad_2";
+            case GLFW.GLFW_KEY_KP_3 -> "NumPad_3";
+            case GLFW.GLFW_KEY_KP_4 -> "NumPad_4";
+            case GLFW.GLFW_KEY_KP_5 -> "NumPad_5";
+            case GLFW.GLFW_KEY_KP_6 -> "NumPad_6";
+            case GLFW.GLFW_KEY_KP_7 -> "NumPad_7";
+            case GLFW.GLFW_KEY_KP_8 -> "NumPad_8";
+            case GLFW.GLFW_KEY_KP_9 -> "NumPad_9";
+            case GLFW.GLFW_KEY_KP_ADD -> "NumPad_Add";
+            case GLFW.GLFW_KEY_KP_SUBTRACT -> "NumPad_Subtract";
+            case GLFW.GLFW_KEY_KP_MULTIPLY -> "NumPad_Multiply";
+            case GLFW.GLFW_KEY_KP_DIVIDE -> "NumPad_Divide";
+            case GLFW.GLFW_KEY_KP_DECIMAL -> "NumPad_Decimal";
+            case GLFW.GLFW_KEY_KP_EQUAL -> "NumPad_Equal";
             default -> {
                 String name = GLFW.glfwGetKeyName(keyCode, 0);
                 yield (name != null) ? name.toUpperCase() : "Key_" + keyCode;
