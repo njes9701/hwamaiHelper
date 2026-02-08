@@ -21,7 +21,7 @@ public class KeyBindingHandler {
 
         // --- 新增：遊戲模式切換轉盤 ---
         String wheelKey = (config.gameModeWheelKey == null || config.gameModeWheelKey.isEmpty()) ? "alt" : config.gameModeWheelKey;
-        if (InputUtils.isBindingPressed(client, wheelKey)) {
+        if (config.gameModeWheelEnabled && InputUtils.isBindingPressed(client, wheelKey)) {
              client.setScreen(new org.NJ.hwamaihelper.client.screens.GameModeWheelScreen());
              return; // 開啟後直接返回，避免觸發其他按鍵
         }

@@ -21,6 +21,7 @@ public class PersonalSettingScreen implements NJTab {
     private KeyBindingComponent openWorkstationBinding;
     private KeyBindingComponent openGetItemBinding;
     private KeyBindingComponent gameModeWheelBinding;
+    private ButtonWidget gameModeWheelToggleBtn;
     private ButtonWidget replenishFireworksBtn;
 
     private int screenWidth;
@@ -55,10 +56,15 @@ public class PersonalSettingScreen implements NJTab {
                 "遊戲模式切換轉盤", config.gameModeWheelKey, "alt"
         );
 
+        this.gameModeWheelToggleBtn = ButtonWidget.builder(getGameModeWheelToggleText(config), b -> {
+            config.gameModeWheelEnabled = !config.gameModeWheelEnabled;
+            b.setMessage(getGameModeWheelToggleText(config));
+        }).dimensions(centerX - 100, 180, 200, 20).build();
+
         this.replenishFireworksBtn = ButtonWidget.builder(getReplenishText(config), b -> {
             config.autoReplenishFireworks = !config.autoReplenishFireworks;
             b.setMessage(getReplenishText(config));
-        }).dimensions(centerX - 100, 180, 200, 20).build();
+        }).dimensions(centerX - 100, 205, 200, 20).build();
     }
 
     @Override
@@ -72,6 +78,7 @@ public class PersonalSettingScreen implements NJTab {
         openWorkstationBinding.render(context, mouseX, mouseY, delta);
         openGetItemBinding.render(context, mouseX, mouseY, delta);
         gameModeWheelBinding.render(context, mouseX, mouseY, delta);
+        gameModeWheelToggleBtn.render(context, mouseX, mouseY, delta);
         replenishFireworksBtn.render(context, mouseX, mouseY, delta);
 
         if (replenishFireworksBtn.isMouseOver(mouseX, mouseY)) {
@@ -94,6 +101,7 @@ public class PersonalSettingScreen implements NJTab {
         if (openMenuBinding.mouseClicked(click)) return true;
         if (openWorkstationBinding.mouseClicked(click)) return true;
         if (openGetItemBinding.mouseClicked(click)) return true;
+        if (gameModeWheelToggleBtn.mouseClicked(click, d)) return true;
         return gameModeWheelBinding.mouseClicked(click);
     }
 
@@ -124,7 +132,6 @@ public class PersonalSettingScreen implements NJTab {
         config.openMenuKey = openMenuBinding.getValue();
         config.openWorkstationKey = openWorkstationBinding.getValue();
         config.openGetItemKey = openGetItemBinding.getValue();
-        config.gameModeWheelKey = gameModeWheelBinding.getValue();
         NJConfigManager.save();
     }
 
@@ -139,5 +146,9 @@ public class PersonalSettingScreen implements NJTab {
 
     private Text getReplenishText(NJConfig config) {
         return Text.of("煙火自動補充: " + (config.autoReplenishFireworks ? "§a開啟" : "§c關閉"));
+    }
+
+    private Text getGameModeWheelToggleText(NJConfig config) {
+        return Text.of("遊戲模式切換轉盤開關: " + (config.gameModeWheelEnabled ? "§a開啟" : "§c關閉"));
     }
 }

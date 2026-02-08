@@ -16,9 +16,24 @@ public class KeyRecorder {
 
     private static String getKeyName(int keyCode) {
         return switch (keyCode) {
-            case GLFW.GLFW_KEY_LEFT_CONTROL, GLFW.GLFW_KEY_RIGHT_CONTROL -> "ctrl";
-            case GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_RIGHT_SHIFT -> "shift";
-            case GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_RIGHT_ALT -> "alt";
+            case GLFW.GLFW_KEY_LEFT_CONTROL -> "left_ctrl";
+            case GLFW.GLFW_KEY_RIGHT_CONTROL -> "right_ctrl";
+            case GLFW.GLFW_KEY_LEFT_SHIFT -> "left_shift";
+            case GLFW.GLFW_KEY_RIGHT_SHIFT -> "right_shift";
+            case GLFW.GLFW_KEY_LEFT_ALT -> "left_alt";
+            case GLFW.GLFW_KEY_RIGHT_ALT -> "right_alt";
+            case GLFW.GLFW_KEY_F1 -> "f1";
+            case GLFW.GLFW_KEY_F2 -> "f2";
+            case GLFW.GLFW_KEY_F3 -> "f3";
+            case GLFW.GLFW_KEY_F4 -> "f4";
+            case GLFW.GLFW_KEY_F5 -> "f5";
+            case GLFW.GLFW_KEY_F6 -> "f6";
+            case GLFW.GLFW_KEY_F7 -> "f7";
+            case GLFW.GLFW_KEY_F8 -> "f8";
+            case GLFW.GLFW_KEY_F9 -> "f9";
+            case GLFW.GLFW_KEY_F10 -> "f10";
+            case GLFW.GLFW_KEY_F11 -> "f11";
+            case GLFW.GLFW_KEY_F12 -> "f12";
             case GLFW.GLFW_KEY_ENTER -> "enter";
             case GLFW.GLFW_KEY_KP_ENTER -> "numpad_enter";
             case GLFW.GLFW_KEY_KP_0 -> "numpad_0";
@@ -37,6 +52,9 @@ public class KeyRecorder {
             case GLFW.GLFW_KEY_KP_DIVIDE -> "numpad_divide";
             case GLFW.GLFW_KEY_KP_DECIMAL -> "numpad_decimal";
             case GLFW.GLFW_KEY_KP_EQUAL -> "numpad_equal";
+            case GLFW.GLFW_MOUSE_BUTTON_LEFT -> "mouse_left";
+            case GLFW.GLFW_MOUSE_BUTTON_RIGHT -> "mouse_right";
+            case GLFW.GLFW_MOUSE_BUTTON_MIDDLE -> "mouse_middle";
             default -> {
                 String name = GLFW.glfwGetKeyName(keyCode, 0);
                 yield (name != null) ? name : "key_" + keyCode;

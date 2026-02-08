@@ -67,15 +67,40 @@ public class CommandListScreen implements NJTab {
         if (addButton.mouseClicked(click, doubled)) return true;
 
         for (CommandEntry entry : listWidget.children()) {
+            // 檢查是否點擊了按鍵綁定欄位
             if (entry.row.keyField.isMouseOver(click.x(), click.y())) {
-                activeRow = entry.row;
-                entry.row.keyField.setText("> 請按下按鍵 <");
+                if (activeRow == entry.row) {
+                    // 如果已經是活動行，表示使用者要綁定滑鼠按鍵
+                    pressedKeys.clear();
+                    pressedKeys.add(click.button());
+                    entry.row.keyField.setText(KeyRecorder.convertToText(pressedKeys));
+                    activeRow = null; // 結束錄製
+                    pressedKeys.clear();
+                } else {
+                    // 設為活動行，準備開始錄製鍵盤
+                    activeRow = entry.row;
+                    entry.row.keyField.setText("> 請按下按鍵 <");
+                    pressedKeys.clear();
+                }
                 listWidget.setFocused(null);
                 return true;
             }
         }
 
-        activeRow = null;
+        // 點擊其他地方，取消錄製狀態
+        if (activeRow != null) {
+            // 如果之前有內容，恢復顯示
+            String originalKey = "";
+            for (NJConfig.Entry e : NJConfigManager.getInstance().entries) {
+                if (activeRow.cmdField.getText().equals(e.command)) {
+                    originalKey = e.key;
+                    break;
+                }
+            }
+            activeRow.keyField.setText(originalKey);
+            activeRow = null;
+        }
+
         return listWidget.mouseClicked(click, doubled);
     }
 

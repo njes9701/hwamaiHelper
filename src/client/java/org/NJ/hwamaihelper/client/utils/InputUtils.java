@@ -2,6 +2,7 @@ package org.NJ.hwamaihelper.client.utils;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
+import org.lwjgl.glfw.GLFW;
 
 public class InputUtils {
 
@@ -19,31 +20,143 @@ public class InputUtils {
     public static int getKeyCode(String key) {
         try {
             String lowerKey = key.toLowerCase();
-            String name = switch (lowerKey) {
-                case "ctrl", "control" -> "left.control";
-                case "alt" -> "left.alt";
-                case "shift" -> "left.shift";
-                case "win", "super", "cmd" -> "left.win";
-                case "numpad_0" -> "keypad.0";
-                case "numpad_1" -> "keypad.1";
-                case "numpad_2" -> "keypad.2";
-                case "numpad_3" -> "keypad.3";
-                case "numpad_4" -> "keypad.4";
-                case "numpad_5" -> "keypad.5";
-                case "numpad_6" -> "keypad.6";
-                case "numpad_7" -> "keypad.7";
-                case "numpad_8" -> "keypad.8";
-                case "numpad_9" -> "keypad.9";
-                case "numpad_add" -> "keypad.add";
-                case "numpad_subtract" -> "keypad.subtract";
-                case "numpad_multiply" -> "keypad.multiply";
-                case "numpad_divide" -> "keypad.divide";
-                case "numpad_decimal" -> "keypad.decimal";
-                case "numpad_enter" -> "keypad.enter";
-                case "numpad_equal" -> "keypad.equal";
-                default -> key;
-            };
-            return InputUtil.fromTranslationKey("key.keyboard." + name).getCode();
+            InputUtil.Key inputUtilKey;
+
+            switch (lowerKey) {
+                case "left_ctrl":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.left.control");
+                    break;
+                case "right_ctrl":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.right.control");
+                    break;
+                case "ctrl", "control":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.left.control"); // Default to left
+                    break;
+                case "left_shift":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.left.shift");
+                    break;
+                case "right_shift":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.right.shift");
+                    break;
+                case "shift":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.left.shift"); // Default to left
+                    break;
+                case "left_alt":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.left.alt");
+                    break;
+                case "right_alt":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.right.alt");
+                    break;
+                case "alt":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.left.alt"); // Default to left
+                    break;
+                case "f1":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.f1");
+                    break;
+                case "f2":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.f2");
+                    break;
+                case "f3":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.f3");
+                    break;
+                case "f4":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.f4");
+                    break;
+                case "f5":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.f5");
+                    break;
+                case "f6":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.f6");
+                    break;
+                case "f7":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.f7");
+                    break;
+                case "f8":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.f8");
+                    break;
+                case "f9":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.f9");
+                    break;
+                case "f10":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.f10");
+                    break;
+                case "f11":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.f11");
+                    break;
+                case "f12":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.f12");
+                    break;
+                case "win", "super", "cmd":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.left.win");
+                    break;
+                case "numpad_0":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.keypad.0");
+                    break;
+                case "numpad_1":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.keypad.1");
+                    break;
+                case "numpad_2":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.keypad.2");
+                    break;
+                case "numpad_3":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.keypad.3");
+                    break;
+                case "numpad_4":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.keypad.4");
+                    break;
+                case "numpad_5":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.keypad.5");
+                    break;
+                case "numpad_6":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.keypad.6");
+                    break;
+                case "numpad_7":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.keypad.7");
+                    break;
+                case "numpad_8":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.keypad.8");
+                    break;
+                case "numpad_9":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.keypad.9");
+                    break;
+                case "numpad_add":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.keypad.add");
+                    break;
+                case "numpad_subtract":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.keypad.subtract");
+                    break;
+                case "numpad_multiply":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.keypad.multiply");
+                    break;
+                case "numpad_divide":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.keypad.divide");
+                    break;
+                case "numpad_decimal":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.keypad.decimal");
+                    break;
+                case "numpad_enter":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.keypad.enter");
+                    break;
+                case "numpad_equal":
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard.keypad.equal");
+                    break;
+                case "mouse_left":
+                    inputUtilKey = InputUtil.Type.MOUSE.createFromCode(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+                    break;
+                case "mouse_right":
+                    inputUtilKey = InputUtil.Type.MOUSE.createFromCode(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+                    break;
+                case "mouse_middle":
+                    inputUtilKey = InputUtil.Type.MOUSE.createFromCode(GLFW.GLFW_MOUSE_BUTTON_MIDDLE);
+                    break;
+                default:
+                    inputUtilKey = InputUtil.fromTranslationKey("key.keyboard." + lowerKey);
+                    if (inputUtilKey == InputUtil.UNKNOWN_KEY) { // Corrected check
+                        inputUtilKey = InputUtil.fromTranslationKey("key." + lowerKey);
+                    }
+                    break;
+            }
+            return inputUtilKey.getCode();
         } catch (Exception e) {
             return -1;
         }

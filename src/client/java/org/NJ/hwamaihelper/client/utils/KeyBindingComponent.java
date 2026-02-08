@@ -38,7 +38,7 @@ public class KeyBindingComponent {
         int spacing = 5;
 
         // 計算顯示框（原本 TextField 的位置）
-        this.fieldW = buttonWidth; // 如果 Ctrl 還是太擠，可以把這裡改大一點，例如 60
+        this.fieldW = buttonWidth;
         this.fieldH = 20;
         this.fieldX = x + width - (buttonWidth * 2) - spacing;
         this.fieldY = y;
@@ -60,9 +60,24 @@ public class KeyBindingComponent {
 
     private String getKeyName(int keyCode) {
         return switch (keyCode) {
-            case GLFW.GLFW_KEY_LEFT_CONTROL, GLFW.GLFW_KEY_RIGHT_CONTROL -> "Ctrl";
-            case GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_RIGHT_SHIFT -> "Shift";
-            case GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_RIGHT_ALT -> "Alt";
+            case GLFW.GLFW_KEY_LEFT_CONTROL -> "Left_Ctrl";
+            case GLFW.GLFW_KEY_RIGHT_CONTROL -> "Right_Ctrl";
+            case GLFW.GLFW_KEY_LEFT_SHIFT -> "Left_Shift";
+            case GLFW.GLFW_KEY_RIGHT_SHIFT -> "Right_Shift";
+            case GLFW.GLFW_KEY_LEFT_ALT -> "Left_Alt";
+            case GLFW.GLFW_KEY_RIGHT_ALT -> "Right_Alt";
+            case GLFW.GLFW_KEY_F1 -> "F1";
+            case GLFW.GLFW_KEY_F2 -> "F2";
+            case GLFW.GLFW_KEY_F3 -> "F3";
+            case GLFW.GLFW_KEY_F4 -> "F4";
+            case GLFW.GLFW_KEY_F5 -> "F5";
+            case GLFW.GLFW_KEY_F6 -> "F6";
+            case GLFW.GLFW_KEY_F7 -> "F7";
+            case GLFW.GLFW_KEY_F8 -> "F8";
+            case GLFW.GLFW_KEY_F9 -> "F9";
+            case GLFW.GLFW_KEY_F10 -> "F10";
+            case GLFW.GLFW_KEY_F11 -> "F11";
+            case GLFW.GLFW_KEY_F12 -> "F12";
             case GLFW.GLFW_KEY_ENTER -> "Enter";
             case GLFW.GLFW_KEY_KP_ENTER -> "NumPad_Enter";
             case GLFW.GLFW_KEY_SPACE -> "Space";
@@ -106,15 +121,22 @@ public class KeyBindingComponent {
         } else {
             display = currentText;
         }
+        String displayText = display; // Use a new variable for the potentially truncated text
 
-        // 4. 居中渲染
-        int textWidth = client.textRenderer.getWidth(display);
-        int tx = fieldX + (fieldW - textWidth) / 2;
+        int maxTextWidth = fieldW - 4; // Allow some padding (e.g., 2 pixels on each side)
+        int actualTextWidth = client.textRenderer.getWidth(displayText);
+
+        if (actualTextWidth > maxTextWidth) {
+            displayText = client.textRenderer.trimToWidth(displayText, maxTextWidth - client.textRenderer.getWidth("...")) + "...";
+        }
+
+        // 4. 渲染文本 (左對齊)
+        int tx = fieldX + 2; // 2 pixels padding from left
         int ty = fieldY + (fieldH - 8) / 2;
 
         // 錄製時使用黃色或亮色，讓玩家知道正在輸入
         int textColor = isRecording ? 0xFFFFFF55 : -1;
-        context.drawTextWithShadow(client.textRenderer, display, tx, ty, textColor);
+        context.drawTextWithShadow(client.textRenderer, displayText, tx, ty, textColor);
 
         // 5. 渲染重置按鈕
         resetBtn.render(context, mouseX, mouseY, delta);
@@ -123,15 +145,30 @@ public class KeyBindingComponent {
     public boolean mouseClicked(Click click) {
         if (resetBtn.mouseClicked(click, false)) return true;
 
+        // 如果目前正在錄製，且點擊在顯示框外面，則取消錄製
+        if (isRecording && !(click.x() >= fieldX && click.x() <= fieldX + fieldW &&
+                             click.y() >= fieldY && click.y() <= fieldY + fieldH)) {
+            isRecording = false;
+            return false;
+        }
+
         // 檢查是否點擊了自定義顯示框區域
         if (click.x() >= fieldX && click.x() <= fieldX + fieldW &&
                 click.y() >= fieldY && click.y() <= fieldY + fieldH) {
-            isRecording = true;
-            pressedKeys.clear();
-            return true;
+            if (isRecording) {
+                // 如果已經在錄製中，再次點擊顯示框則記錄滑鼠按鍵並結束錄製
+                pressedKeys.clear(); // 清除之前的按鍵
+                pressedKeys.add(click.button());
+                this.currentText = convertToText(pressedKeys);
+                isRecording = false;
+                return true;
+            } else {
+                // 開始錄製
+                isRecording = true;
+                pressedKeys.clear();
+                return true;
+            }
         }
-
-        isRecording = false;
         return false;
     }
 
