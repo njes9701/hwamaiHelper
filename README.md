@@ -24,12 +24,6 @@ A Fabric client-side assistant mod designed specifically for the Hwamai server, 
     *   **Main Menu Toggle**: Set the key to open the HwamaiHelper main interface (Default: `X + F`).
     *   **工作方塊介面**：設定開啟工作方塊快速選單的按鍵 (預設 `Shift + G`)。
     *   **Workstation Interface**: Set the key to open the Workstation quick menu (Default: `Shift + G`).
-*   **材質包管理**：
-*   **Resource Pack Management:**
-    *   一鍵切換材質包狀態 (自動/維持)。
-    *   One-click toggle for resource pack status (Automatic/Maintain).
-    *   **自動取消材質包**：可設定進入伺服器時自動輸入指令取消材質包。
-    *   **Auto-Cancel Resource Pack**: Can be configured to automatically execute commands to cancel resource packs upon joining the server.
 *   **煙火自動補充**：
 *   **Auto Firework Replenishment:**
     *   **開關**：開啟後，當背包內的煙火數量不足時自動補充。
@@ -121,7 +115,6 @@ The mod's configuration file is located at `.minecraft/config/hwamaihelper.json`
 主要設定項包括：
 Main configuration items include:
 *   `enabled`: 是否啟用模組。 (Whether the mod is enabled.)
-*   `autoDisableResourcePack`: 進入伺服器時是否自動發送取消材質包指令。 (Whether to automatically send the cancel resource pack command upon joining.)
 *   `autoReplenishFireworks`: 是否自動補充煙火。 (Whether to automatically replenish fireworks.)
 *   `openMenuKey`: 主選單快捷鍵 (預設 `X + F`)。 (Main menu keybinding.)
 *   `gameModeWheelKey`: 模式切換輪盤快捷鍵 (預設 `alt`)。 (Game mode wheel keybinding.)

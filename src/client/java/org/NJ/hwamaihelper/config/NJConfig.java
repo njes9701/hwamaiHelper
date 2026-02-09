@@ -7,7 +7,6 @@ import java.util.List;
 
 public class NJConfig {
     // 基礎設定值
-    public boolean autoDisableResourcePack = false;
     public boolean enabled = true;
     public boolean autoReplenishFireworks = false;
 
@@ -77,14 +76,8 @@ public class NJConfig {
 
     // --- 狀態緩存區 (用於判斷是否需要重複執行指令) ---
 
-    // 紀錄上一次材質包的開關狀態
-    public boolean lastAutoDisableStatus = false;
-
     // 重要：紀錄進入伺服器後是否已經完成「首次同步」
     public boolean hasInitialized = false;
-
-    // 紀錄材質包是否已在本次啟動後初始化
-    public boolean hasInitializedPack = false;
 
     // 暱稱儲存相關
     public String lastSavedNick = "";

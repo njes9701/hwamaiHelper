@@ -8,27 +8,6 @@ import org.NJ.hwamaihelper.config.NJConfigManager;
 
 public class ConnectionHandler {
     public static void onJoin(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
-        NJConfig config = NJConfigManager.getInstance();
-        if (config == null) return;
-
-        new Thread(() -> {
-            try {
-                Thread.sleep(2500);
-                if (client.player != null) {
-                    client.execute(() -> {
-                        if (!config.hasInitializedPack) {
-                            String packCmd = config.autoDisableResourcePack
-                                    ? "chmc 設定 自己 取消使用材質包"
-                                    : "chmc 設定 自己 使用材質包";
-                            client.player.networkHandler.sendChatCommand(packCmd);
-                            config.hasInitializedPack = true;
-                        }
-                        NJConfigManager.save();
-                    });
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
+        // No-op: Resource pack logic removed
     }
 }
