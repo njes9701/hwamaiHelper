@@ -7,22 +7,18 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.input.CharInput;
-import org.NJ.hwamaihelper.client.components.ResourcePackComponent;
-import org.NJ.hwamaihelper.client.components.ChunkDistanceComponent;
 import org.NJ.hwamaihelper.client.utils.KeyBindingComponent;
 import org.NJ.hwamaihelper.config.NJConfig;
 import org.NJ.hwamaihelper.config.NJConfigManager;
 
 public class PersonalSettingScreen implements NJTab {
     private final MinecraftClient client = MinecraftClient.getInstance();
-    private ResourcePackComponent resourcePackComp;
-    private ChunkDistanceComponent distanceComp;
+    private KeyBindingComponent resourcePackBinding;
     private KeyBindingComponent openMenuBinding;
     private KeyBindingComponent openWorkstationBinding;
     private KeyBindingComponent openGetItemBinding;
     private KeyBindingComponent gameModeWheelBinding;
-    private ButtonWidget gameModeWheelToggleBtn;
-    private ButtonWidget replenishFireworksBtn;
+    private KeyBindingComponent replenishFireworksBinding;
 
     private int screenWidth;
 
@@ -30,125 +26,118 @@ public class PersonalSettingScreen implements NJTab {
     public void init(int width, int height) {
         this.screenWidth = width;
         int centerX = (width + 100) / 2;
+        int startX = centerX - 150; // 統一靠左對齊點
         NJConfig config = NJConfigManager.getInstance();
 
-        this.resourcePackComp = new ResourcePackComponent(centerX - 100, 55, 200, 20);
-        this.distanceComp = new ChunkDistanceComponent(centerX - 100, 80, 200, () -> this.init(width, height));
+        // 1. 材質包自動取消 (不需綁定鍵)
+        this.resourcePackBinding = new KeyBindingComponent(
+                startX, 30, 300,
+                "材質包自動取消", "", "", true, config.autoDisableResourcePack,
+                null, val -> config.autoDisableResourcePack = val
+        );
 
-        // 使用新組件：標題、目前值、預設值
         this.openMenuBinding = new KeyBindingComponent(
-                centerX - 100, 30, 200,
-                "華麥小助手主開關", config.openMenuKey, "X + F"
+                startX, 55, 300,
+                "小助手主開關", config.openMenuKey, "X + F", config.openMenuOnRelease, config.openMenuEnabled,
+                val -> config.openMenuOnRelease = val,
+                val -> config.openMenuEnabled = val
         );
 
         this.openWorkstationBinding = new KeyBindingComponent(
-                centerX - 100, 105, 200,
-                "工作方塊介面開關", config.openWorkstationKey, "shift + G"
+                startX, 80, 300,
+                "工作方塊介面", config.openWorkstationKey, "shift + G", config.openWorkstationOnRelease, config.openWorkstationEnabled,
+                val -> config.openWorkstationOnRelease = val,
+                val -> config.openWorkstationEnabled = val
         );
 
         this.openGetItemBinding = new KeyBindingComponent(
-                centerX - 100, 130, 200,
-                "取得物品介面開關", config.openGetItemKey, "G"
+                startX, 105, 300,
+                "取得物品介面", config.openGetItemKey, "G", config.openGetItemOnRelease, config.openGetItemEnabled,
+                val -> config.openGetItemOnRelease = val,
+                val -> config.openGetItemEnabled = val
         );
 
         this.gameModeWheelBinding = new KeyBindingComponent(
-                centerX - 100, 155, 200,
-                "遊戲模式切換轉盤", config.gameModeWheelKey, "alt"
+                startX, 130, 300,
+                "模式切換轉盤", config.gameModeWheelKey, "alt", true, config.gameModeWheelEnabled,
+                null, val -> config.gameModeWheelEnabled = val
         );
 
-        this.gameModeWheelToggleBtn = ButtonWidget.builder(getGameModeWheelToggleText(config), b -> {
-            config.gameModeWheelEnabled = !config.gameModeWheelEnabled;
-            b.setMessage(getGameModeWheelToggleText(config));
-        }).dimensions(centerX - 100, 180, 200, 20).build();
-
-        this.replenishFireworksBtn = ButtonWidget.builder(getReplenishText(config), b -> {
-            config.autoReplenishFireworks = !config.autoReplenishFireworks;
-            b.setMessage(getReplenishText(config));
-        }).dimensions(centerX - 100, 205, 200, 20).build();
+        this.replenishFireworksBinding = new KeyBindingComponent(
+                startX, 155, 300,
+                "煙火自動補充", "", "", true, config.autoReplenishFireworks,
+                null, val -> config.autoReplenishFireworks = val
+        );
     }
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        resourcePackComp.getWidget().render(context, mouseX, mouseY, delta);
-        distanceComp.getSlider().render(context, mouseX, mouseY, delta);
-        distanceComp.getResetBtn().render(context, mouseX, mouseY, delta);
-
-        // 渲染快捷鍵組件
+        // 渲染快捷鍵與功能組件
+        resourcePackBinding.render(context, mouseX, mouseY, delta);
         openMenuBinding.render(context, mouseX, mouseY, delta);
         openWorkstationBinding.render(context, mouseX, mouseY, delta);
         openGetItemBinding.render(context, mouseX, mouseY, delta);
         gameModeWheelBinding.render(context, mouseX, mouseY, delta);
-        gameModeWheelToggleBtn.render(context, mouseX, mouseY, delta);
-        replenishFireworksBtn.render(context, mouseX, mouseY, delta);
+        replenishFireworksBinding.render(context, mouseX, mouseY, delta);
 
-        if (replenishFireworksBtn.isMouseOver(mouseX, mouseY)) {
-            context.drawTooltip(client.textRenderer, Text.of("當煙火數量小於5個且使用時自動補充"), mouseX, mouseY);
+        // 額外繪製煙火補充的 Tooltip
+        int centerX = (this.screenWidth + 100) / 2;
+        if (mouseX >= centerX - 150 && mouseX <= centerX + 150 && mouseY >= 155 && mouseY <= 175) {
+             context.drawTooltip(client.textRenderer, Text.of("當煙火數量小於5個且使用時自動補充"), mouseX, mouseY);
         }
     }
 
     @Override
     public boolean mouseClicked(Click click, boolean d) {
-        // 優先處理滑塊焦點邏輯，確保點擊其他地方時取消滑塊焦點
-        boolean clickedSlider = distanceComp.getSlider().mouseClicked(click, d);
-        distanceComp.getSlider().setFocused(clickedSlider);
-        if (clickedSlider) return true;
-
-        if (resourcePackComp.getWidget().mouseClicked(click, d)) return true;
-        if (distanceComp.getResetBtn().mouseClicked(click, d)) return true;
-        if (replenishFireworksBtn.mouseClicked(click, d)) return true;
-
-        // 修正點：直接傳入整個 click 物件，不要拆開
+        if (resourcePackBinding.mouseClicked(click)) return true;
         if (openMenuBinding.mouseClicked(click)) return true;
         if (openWorkstationBinding.mouseClicked(click)) return true;
         if (openGetItemBinding.mouseClicked(click)) return true;
-        if (gameModeWheelToggleBtn.mouseClicked(click, d)) return true;
-        return gameModeWheelBinding.mouseClicked(click);
+        if (gameModeWheelBinding.mouseClicked(click)) return true;
+        return replenishFireworksBinding.mouseClicked(click);
     }
 
     @Override
     public boolean keyPressed(KeyInput input) {
-        // 修正點：直接傳入整個 input 物件
+        if (resourcePackBinding.keyPressed(input)) return true;
         if (openMenuBinding.keyPressed(input)) return true;
         if (openWorkstationBinding.keyPressed(input)) return true;
         if (openGetItemBinding.keyPressed(input)) return true;
-        return gameModeWheelBinding.keyPressed(input);
+        if (gameModeWheelBinding.keyPressed(input)) return true;
+        return replenishFireworksBinding.keyPressed(input);
     }
 
     @Override
     public boolean keyReleased(KeyInput input) {
-        // 修正點：直接傳入整個 input 物件
+        if (resourcePackBinding.keyReleased(input)) return true;
         if (openMenuBinding.keyReleased(input)) return true;
         if (openWorkstationBinding.keyReleased(input)) return true;
         if (openGetItemBinding.keyReleased(input)) return true;
-        return gameModeWheelBinding.keyReleased(input);
+        if (gameModeWheelBinding.keyReleased(input)) return true;
+        return replenishFireworksBinding.keyReleased(input);
     }
 
     @Override
     public void save() {
-        resourcePackComp.save(client);
-        distanceComp.save(client);
-
         NJConfig config = NJConfigManager.getInstance();
+
+        // 處理材質包自動取消的儲存與立即套用邏輯
+        if (config.autoDisableResourcePack != config.lastAutoDisableStatus) {
+            if (client.player != null) {
+                String cmd = config.autoDisableResourcePack ? "chmc 設定 自己 取消使用材質包" : "chmc 設定 自己 使用材質包";
+                client.player.networkHandler.sendChatCommand(cmd);
+            }
+            config.lastAutoDisableStatus = config.autoDisableResourcePack;
+        }
+
         config.openMenuKey = openMenuBinding.getValue();
         config.openWorkstationKey = openWorkstationBinding.getValue();
         config.openGetItemKey = openGetItemBinding.getValue();
+        config.gameModeWheelKey = gameModeWheelBinding.getValue();
         NJConfigManager.save();
     }
 
     @Override public boolean mouseScrolled(double x, double y, double h, double v) { return false; }
     @Override public boolean charTyped(CharInput i) { return false; }
-    @Override public boolean mouseDragged(Click click, double x, double y) {
-        if (distanceComp.getSlider().isFocused() && distanceComp.getSlider().mouseDragged(click, x, y)) {
-            return true;
-        }
-        return false;
-    }
-
-    private Text getReplenishText(NJConfig config) {
-        return Text.of("煙火自動補充: " + (config.autoReplenishFireworks ? "§a開啟" : "§c關閉"));
-    }
-
-    private Text getGameModeWheelToggleText(NJConfig config) {
-        return Text.of("遊戲模式切換轉盤開關: " + (config.gameModeWheelEnabled ? "§a開啟" : "§c關閉"));
-    }
+    @Override public boolean mouseDragged(Click click, double x, double y) { return false; }
 }

@@ -17,38 +17,87 @@ public class KeyBindingComponent {
     private final String label;
     private final String defaultKey;
     private final ButtonWidget resetBtn;
+    private final ButtonWidget triggerModeBtn;
+    private final ButtonWidget toggleBtn;
 
     // 顯示框的座標與大小
     private final int x, y, width;
     private final int fieldX, fieldY, fieldW, fieldH;
 
     private boolean isRecording = false;
+    private boolean onRelease = true;
+    private boolean enabled = true;
     private final Set<Integer> pressedKeys = new HashSet<>();
     private String currentText;
+    private java.util.function.Consumer<Boolean> onTriggerModeChanged;
+    private java.util.function.Consumer<Boolean> onToggleChanged;
 
-    public KeyBindingComponent(int x, int y, int width, String label, String currentKey, String defaultKey) {
-        this.x = x;
+    public KeyBindingComponent(int x, int y, int width, String label, String currentKey, String defaultKey, 
+                               boolean initialOnRelease, boolean initialEnabled,
+                               java.util.function.Consumer<Boolean> onTriggerModeChanged,
+                               java.util.function.Consumer<Boolean> onToggleChanged) {
+        this.x = x; 
         this.y = y;
-        this.width = width;
+        this.width = width; // 這裡的 width 將作為參考總寬
         this.label = label;
         this.defaultKey = defaultKey;
         this.currentText = (currentKey != null) ? currentKey : defaultKey;
+        this.onRelease = initialOnRelease;
+        this.enabled = initialEnabled;
+        this.onTriggerModeChanged = onTriggerModeChanged;
+        this.onToggleChanged = onToggleChanged;
 
-        int buttonWidth = 50;
-        int spacing = 5;
+        // 定義四個區域的固定起始點 (相對於 x)
+        // 1. 功能敘述區: 0
+        // 2. 按鍵綁定區: 110
+        // 3. 主開關區: 180 (包含模式與開關)
+        // 4. 按鍵重置區: 280
+        
+        int bindingX = x + 110;
+        int switchesX = x + 180;
+        int resetX = x + 280;
 
-        // 計算顯示框（原本 TextField 的位置）
-        this.fieldW = buttonWidth;
+        int modeButtonWidth = 60; // 增加寬度以容納「放開觸發」
+        int toggleButtonWidth = 32;
+        int resetButtonWidth = 35;
+        int spacing = 3;
+
+        // 2. 按鍵綁定區 (顯示框)
+        this.fieldW = 60;
         this.fieldH = 20;
-        this.fieldX = x + width - (buttonWidth * 2) - spacing;
+        this.fieldX = bindingX;
         this.fieldY = y;
 
-        // 重置按鈕
-        int resetX = x + width - buttonWidth;
+        // 3. 主開關區 (模式按鈕 + 開關按鈕)
+        this.triggerModeBtn = ButtonWidget.builder(getTriggerModeText(), b -> {
+            this.onRelease = !this.onRelease;
+            b.setMessage(getTriggerModeText());
+            if (this.onTriggerModeChanged != null) {
+                this.onTriggerModeChanged.accept(this.onRelease);
+            }
+        }).dimensions(switchesX, y, modeButtonWidth, 20).build();
+
+        this.toggleBtn = ButtonWidget.builder(getToggleText(), b -> {
+            this.enabled = !this.enabled;
+            b.setMessage(getToggleText());
+            if (this.onToggleChanged != null) {
+                this.onToggleChanged.accept(this.enabled);
+            }
+        }).dimensions(switchesX + modeButtonWidth + spacing, y, toggleButtonWidth, 20).build();
+
+        // 4. 按鍵重置區 (重置按鈕)
         this.resetBtn = ButtonWidget.builder(Text.of("重置"), b -> {
             this.currentText = this.defaultKey;
             this.isRecording = false;
-        }).dimensions(resetX, y, buttonWidth, 20).build();
+        }).dimensions(resetX, y, resetButtonWidth, 20).build();
+    }
+
+    private Text getTriggerModeText() {
+        return Text.of(onRelease ? "§7放開觸發" : "§b按下觸發");
+    }
+
+    private Text getToggleText() {
+        return Text.of(enabled ? "§a開" : "§c關");
     }
 
     private String convertToText(Set<Integer> keys) {
@@ -108,65 +157,78 @@ public class KeyBindingComponent {
         // 1. 渲染左側標籤
         context.drawTextWithShadow(client.textRenderer, label, x, y + 6, -1);
 
-        // 2. 繪製背景與邊框 (使用你源碼中的 drawStrokedRectangle)
-        context.fill(fieldX, fieldY, fieldX + fieldW, fieldY + fieldH, 0xFF000000);
-        int borderColor = isRecording ? 0xFFFFFFFF : 0xFF707070;
-        context.drawStrokedRectangle(fieldX, fieldY, fieldW, fieldH, borderColor);
+        // 2. 只有在有按鍵綁定內容時才繪製背景與邊框
+        if (currentText != null && !currentText.isEmpty()) {
+            context.fill(fieldX, fieldY, fieldX + fieldW, fieldY + fieldH, 0xFF000000);
+            int borderColor = isRecording ? 0xFFFFFFFF : 0xFF707070;
+            context.drawStrokedRectangle(fieldX, fieldY, fieldW, fieldH, borderColor);
 
-        // 3. 【修正重點】判斷顯示文字
-        String display;
-        if (isRecording) {
-            // 只要按下過任何鍵，就不再顯示提示文字
-            display = pressedKeys.isEmpty() ? "> 按下鍵 <" : currentText;
-        } else {
-            display = currentText;
+            // 3. 【修正重點】判斷顯示文字
+            String display;
+            if (isRecording) {
+                // 只要按下過任何鍵，就不再顯示提示文字
+                display = pressedKeys.isEmpty() ? "> 按下鍵 <" : currentText;
+            } else {
+                display = currentText;
+            }
+            String displayText = display; // Use a new variable for the potentially truncated text
+
+            int maxTextWidth = fieldW - 4; // Allow some padding (e.g., 2 pixels on each side)
+            int actualTextWidth = client.textRenderer.getWidth(displayText);
+
+            if (actualTextWidth > maxTextWidth) {
+                displayText = client.textRenderer.trimToWidth(displayText, maxTextWidth - client.textRenderer.getWidth("...")) + "...";
+            }
+
+            // 4. 渲染文本 (左對齊)
+            int tx = fieldX + 2; // 2 pixels padding from left
+            int ty = fieldY + (fieldH - 8) / 2;
+
+            // 錄製時使用黃色或亮色，讓玩家知道正在輸入
+            int textColor = isRecording ? 0xFFFFFF55 : -1;
+            context.drawTextWithShadow(client.textRenderer, displayText, tx, ty, textColor);
         }
-        String displayText = display; // Use a new variable for the potentially truncated text
 
-        int maxTextWidth = fieldW - 4; // Allow some padding (e.g., 2 pixels on each side)
-        int actualTextWidth = client.textRenderer.getWidth(displayText);
-
-        if (actualTextWidth > maxTextWidth) {
-            displayText = client.textRenderer.trimToWidth(displayText, maxTextWidth - client.textRenderer.getWidth("...")) + "...";
+        // 5. 渲染按鈕
+        if (onTriggerModeChanged != null) triggerModeBtn.render(context, mouseX, mouseY, delta);
+        if (onToggleChanged != null) toggleBtn.render(context, mouseX, mouseY, delta);
+        if (currentText != null && !currentText.isEmpty()) {
+            resetBtn.render(context, mouseX, mouseY, delta);
         }
-
-        // 4. 渲染文本 (左對齊)
-        int tx = fieldX + 2; // 2 pixels padding from left
-        int ty = fieldY + (fieldH - 8) / 2;
-
-        // 錄製時使用黃色或亮色，讓玩家知道正在輸入
-        int textColor = isRecording ? 0xFFFFFF55 : -1;
-        context.drawTextWithShadow(client.textRenderer, displayText, tx, ty, textColor);
-
-        // 5. 渲染重置按鈕
-        resetBtn.render(context, mouseX, mouseY, delta);
     }
 
     public boolean mouseClicked(Click click) {
-        if (resetBtn.mouseClicked(click, false)) return true;
-
-        // 如果目前正在錄製，且點擊在顯示框外面，則取消錄製
-        if (isRecording && !(click.x() >= fieldX && click.x() <= fieldX + fieldW &&
-                             click.y() >= fieldY && click.y() <= fieldY + fieldH)) {
-            isRecording = false;
-            return false;
+        if (currentText != null && !currentText.isEmpty()) {
+            if (resetBtn.mouseClicked(click, false)) return true;
         }
+        if (onTriggerModeChanged != null && triggerModeBtn.mouseClicked(click, false)) return true;
+        if (onToggleChanged != null && toggleBtn.mouseClicked(click, false)) return true;
 
-        // 檢查是否點擊了自定義顯示框區域
-        if (click.x() >= fieldX && click.x() <= fieldX + fieldW &&
-                click.y() >= fieldY && click.y() <= fieldY + fieldH) {
-            if (isRecording) {
-                // 如果已經在錄製中，再次點擊顯示框則記錄滑鼠按鍵並結束錄製
-                pressedKeys.clear(); // 清除之前的按鍵
-                pressedKeys.add(click.button());
-                this.currentText = convertToText(pressedKeys);
+        // 只有在有綁定的情況下才處理點擊
+        if (currentText != null && !currentText.isEmpty()) {
+            // 如果目前正在錄製，且點擊在顯示框外面，則取消錄製
+            if (isRecording && !(click.x() >= fieldX && click.x() <= fieldX + fieldW &&
+                                 click.y() >= fieldY && click.y() <= fieldY + fieldH)) {
                 isRecording = false;
-                return true;
-            } else {
-                // 開始錄製
-                isRecording = true;
-                pressedKeys.clear();
-                return true;
+                return false;
+            }
+
+            // 檢查是否點擊了自定義顯示框區域
+            if (click.x() >= fieldX && click.x() <= fieldX + fieldW &&
+                    click.y() >= fieldY && click.y() <= fieldY + fieldH) {
+                if (isRecording) {
+                    // 如果已經在錄製中，再次點擊顯示框則記錄滑鼠按鍵並結束錄製
+                    pressedKeys.clear(); // 清除之前的按鍵
+                    pressedKeys.add(click.button());
+                    this.currentText = convertToText(pressedKeys);
+                    isRecording = false;
+                    return true;
+                } else {
+                    // 開始錄製
+                    isRecording = true;
+                    pressedKeys.clear();
+                    return true;
+                }
             }
         }
         return false;

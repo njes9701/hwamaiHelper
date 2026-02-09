@@ -8,7 +8,6 @@ import java.util.List;
 public class NJConfig {
     // 基礎設定值
     public boolean autoDisableResourcePack = false;
-    public int chunkLoadDistance = 10;
     public boolean enabled = true;
     public boolean autoReplenishFireworks = false;
 
@@ -17,19 +16,44 @@ public class NJConfig {
     public String openWorkstationKey = "shift + G";
     public String openGetItemKey = "G";
     public String gameModeWheelKey = "alt";
-    public boolean gameModeWheelEnabled = true;
     
     // 紀錄上次開啟的分頁索引 (0: 指令, 1: 設定, 2: 暱稱)
     public int lastTabIndex = 0;
 
     // 每一筆功能的資料結構
+    // --- 新增：功能開關設定 ---
+    public boolean openMenuEnabled = true;
+    public boolean openWorkstationEnabled = true;
+    public boolean openGetItemEnabled = true;
+    public boolean gameModeWheelEnabled = true;
+
+    // --- 新增：觸發模式設定 ---
+    public boolean openMenuOnRelease = true;
+    public boolean openWorkstationOnRelease = true;
+    public boolean openGetItemOnRelease = true;
+
     public static class Entry {
         public String command;
         public String key;
+        public boolean onRelease = true;
+        public boolean enabled = true;
 
         public Entry(String command, String key) {
             this.command = command;
             this.key = key;
+        }
+
+        public Entry(String command, String key, boolean onRelease) {
+            this.command = command;
+            this.key = key;
+            this.onRelease = onRelease;
+        }
+
+        public Entry(String command, String key, boolean onRelease, boolean enabled) {
+            this.command = command;
+            this.key = key;
+            this.onRelease = onRelease;
+            this.enabled = enabled;
         }
     }
 
@@ -55,9 +79,6 @@ public class NJConfig {
 
     // 紀錄上一次材質包的開關狀態
     public boolean lastAutoDisableStatus = false;
-
-    // 紀錄上一次執行的強載入距離
-    public int lastChunkDistance = -1;
 
     // 重要：紀錄進入伺服器後是否已經完成「首次同步」
     public boolean hasInitialized = false;

@@ -39,11 +39,11 @@ public class CommandListScreen implements NJTab {
         this.listWidget.setX(110);
 
         for (NJConfig.Entry e : NJConfigManager.getInstance().entries) {
-            this.listWidget.addEntry(new CommandEntry(e.command, e.key));
+            this.listWidget.addEntry(new CommandEntry(e.command, e.key, e.onRelease, e.enabled));
         }
 
         this.addButton = ButtonWidget.builder(Text.of("§a+ 增加指令"), b -> {
-            CommandEntry newEntry = new CommandEntry("", "");
+            CommandEntry newEntry = new CommandEntry("", "", true, true);
             this.listWidget.addEntry(newEntry);
             this.listWidget.setScrollY(this.listWidget.getMaxScrollY());
         }).dimensions((width + 100) / 2 - 75, height - 35, 150, 20).build();
@@ -146,7 +146,7 @@ public class CommandListScreen implements NJTab {
         for (CommandEntry entry : listWidget.children()) {
             String cmd = entry.row.cmdField.getText().trim();
             if (!cmd.isEmpty()) {
-                config.entries.add(new NJConfig.Entry(cmd, entry.row.keyField.getText()));
+                config.entries.add(new NJConfig.Entry(cmd, entry.row.keyField.getText(), entry.row.onRelease, entry.row.enabled));
             }
         }
         NJConfigManager.save();
@@ -164,14 +164,16 @@ public class CommandListScreen implements NJTab {
 
     private class CommandEntry extends ElementListWidget.Entry<CommandEntry> {
         public final ConfigRow row;
-        public CommandEntry(String cmd, String key) {
-            this.row = new ConfigRow(client.textRenderer, cmd, key, () -> listWidget.remove(this));
+        public CommandEntry(String cmd, String key, boolean onRelease, boolean enabled) {
+            this.row = new ConfigRow(client.textRenderer, cmd, key, onRelease, enabled, () -> listWidget.remove(this));
         }
         @Override
         public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
             row.updatePosition(this.getX() + this.getWidth() / 2, this.getY());
             row.cmdField.render(context, mouseX, mouseY, deltaTicks);
             row.keyField.render(context, mouseX, mouseY, deltaTicks);
+            row.triggerModeBtn.render(context, mouseX, mouseY, deltaTicks);
+            row.toggleBtn.render(context, mouseX, mouseY, deltaTicks);
             row.deleteBtn.render(context, mouseX, mouseY, deltaTicks);
             if (CommandListScreen.this.activeRow == this.row) {
                 context.fill(row.keyField.getX() - 2, row.keyField.getY() - 2,
@@ -179,7 +181,7 @@ public class CommandListScreen implements NJTab {
                         row.keyField.getY() + row.keyField.getHeight() + 2, 0x88FFFF00);
             }
         }
-        @Override public List<? extends net.minecraft.client.gui.Element> children() { return List.of(row.cmdField, row.deleteBtn); }
-        @Override public List<? extends net.minecraft.client.gui.Selectable> selectableChildren() { return List.of(row.cmdField, row.deleteBtn); }
+        @Override public List<? extends net.minecraft.client.gui.Element> children() { return List.of(row.cmdField, row.triggerModeBtn, row.toggleBtn, row.deleteBtn); }
+        @Override public List<? extends net.minecraft.client.gui.Selectable> selectableChildren() { return List.of(row.cmdField, row.triggerModeBtn, row.toggleBtn, row.deleteBtn); }
     }
 }

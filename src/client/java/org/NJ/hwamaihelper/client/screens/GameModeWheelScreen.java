@@ -2,6 +2,7 @@ package org.NJ.hwamaihelper.client.screens;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;

@@ -23,11 +23,6 @@ public class ConnectionHandler {
                             client.player.networkHandler.sendChatCommand(packCmd);
                             config.hasInitializedPack = true;
                         }
-
-                        if (config.chunkLoadDistance != config.lastChunkDistance) {
-                            client.player.networkHandler.sendChatCommand("chmc 設定 自己 強載入距離 " + config.chunkLoadDistance);
-                            config.lastChunkDistance = config.chunkLoadDistance;
-                        }
                         NJConfigManager.save();
                     });
                 }
