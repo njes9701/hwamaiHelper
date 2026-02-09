@@ -30,12 +30,6 @@ A Fabric client-side assistant mod designed specifically for the Hwamai server, 
     *   One-click toggle for resource pack status (Automatic/Maintain).
     *   **自動取消材質包**：可設定進入伺服器時自動輸入指令取消材質包。
     *   **Auto-Cancel Resource Pack**: Can be configured to automatically execute commands to cancel resource packs upon joining the server.
-*   **強載入距離**：
-*   **Force Load Distance:**
-    *   透過滑動條調整強載入距離 (5 ~ 32 格)。
-    *   Adjust the force load distance via a slider (5 ~ 32 blocks).
-    *   支援滑鼠拖曳調整。
-    *   Supports mouse drag adjustment.
 *   **煙火自動補充**：
 *   **Auto Firework Replenishment:**
     *   **開關**：開啟後，當背包內的煙火數量不足時自動補充。
@@ -103,23 +97,48 @@ A Fabric client-side assistant mod designed specifically for the Hwamai server, 
 
 ### 5. 自定義指令 (Custom Commands)
 ### 5. Custom Commands
-*   在 `CommandListScreen` 中可以查看與編輯自定義指令。
-*   Custom commands can be viewed and edited in the `CommandListScreen`.
+*   **靈活配置**：使用者可以在「指令列表」頁面中，點擊「新增」來建立自己的快捷按鍵。
+*   **Flexible Configuration**: Users can create their own shortcut keys by clicking "Add" on the "Command List" page.
+*   **按鍵偵測**：支援單鍵、組合鍵 (如 `Ctrl + Shift + Z`)，並可設定為「按下觸發」或「放開觸發」。
+*   **Key Detection**: Supports single keys and key combinations (e.g., `Ctrl + Shift + Z`), and can be configured as "Trigger on Press" or "Trigger on Release".
 
-## ⚙️ 安裝與使用
-## ⚙️ Installation and Usage
+## ⚙️ 安裝與使用 (Installation and Usage)
 
 1.  安裝 **Fabric Loader** (對應 Minecraft 版本 1.21.1)。
-1.  Install **Fabric Loader** (for Minecraft version 1.21.1).
+    Install **Fabric Loader** (for Minecraft version 1.21.1).
 2.  安裝 **Fabric API**。
-2.  Install **Fabric API**.
+    Install **Fabric API**.
 3.  將本模組 (`hwamaiHelper-x.x.x.jar`) 放入 `.minecraft/mods` 資料夾。
-3.  Place this mod (`hwamaiHelper-x.x.x.jar`) into the `.minecraft/mods` folder.
+    Place this mod (`hwamaiHelper-x.x.x.jar`) into the `.minecraft/mods` folder.
 4.  啟動遊戲，進入伺服器後即可使用。
-4.  Launch the game and join the server to start using it.
+    Launch the game and join the server to start using it.
 
-## 🛠️ 設定檔
-## 🛠️ Configuration
+## 🛠️ 設定檔 (Configuration)
+
+模組的設定檔位於 `.minecraft/config/hwamaihelper.json`。你可以直接編輯此檔案，或透過遊戲內的「個人設定」介面進行調整。
+The mod's configuration file is located at `.minecraft/config/hwamaihelper.json`. You can edit this file directly or adjust settings through the in-game "Personal Settings" interface.
+
+主要設定項包括：
+Main configuration items include:
+*   `enabled`: 是否啟用模組。 (Whether the mod is enabled.)
+*   `autoDisableResourcePack`: 進入伺服器時是否自動發送取消材質包指令。 (Whether to automatically send the cancel resource pack command upon joining.)
+*   `autoReplenishFireworks`: 是否自動補充煙火。 (Whether to automatically replenish fireworks.)
+*   `openMenuKey`: 主選單快捷鍵 (預設 `X + F`)。 (Main menu keybinding.)
+*   `gameModeWheelKey`: 模式切換輪盤快捷鍵 (預設 `alt`)。 (Game mode wheel keybinding.)
+*   `entries`: 儲存所有自定義快捷指令的清單。 (List of all custom shortcut commands.)
+
+## 🏗️ 開發與編譯 (Building)
+
+如果你想自行編譯本專案，請確保已安裝 Java 21。
+If you want to build this project yourself, ensure you have Java 21 installed.
+
+```bash
+# 使用 Gradle 編譯
+./gradlew build
+```
+
+編譯完成後的檔案將位於 `build/libs` 資料夾下。
+The built JAR file will be located in the `build/libs` folder.
 
 ---
 *本模組為華麥伺服器專用輔助工具，請遵守伺服器規範使用。*
