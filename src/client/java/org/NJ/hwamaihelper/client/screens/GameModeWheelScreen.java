@@ -77,6 +77,8 @@ public class GameModeWheelScreen extends Screen {
         int survX = centerX + (int)(iconDist * Math.cos(Math.toRadians(150)));
         int survY = centerY + (int)(iconDist * Math.sin(Math.toRadians(150)));
         drawMode(context, survX, survY, new ItemStack(Items.DIAMOND_SWORD), "生存", selectedIndex == 2);
+
+        super.render(context, mouseX, mouseY, delta);
     }
 
     private void drawCircle(DrawContext context, int cx, int cy, int r, int color) {
@@ -121,8 +123,8 @@ public class GameModeWheelScreen extends Screen {
 
     private void drawMode(DrawContext context, int x, int y, ItemStack stack, String label, boolean selected) {
         context.drawItem(stack, x - 8, y - 12);
-        int color = selected ? 0xFFFFFF : 0xBBBBBB;
-        context.drawCenteredTextWithShadow(textRenderer, label, x, y + 6, color);
+        int color = selected ? -1 : 0xFFAAAAAA;
+        context.drawCenteredTextWithShadow(textRenderer, Text.of(label), x, y + 6, color);
     }
 
     @Override

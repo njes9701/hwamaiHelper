@@ -26,6 +26,7 @@ public class NJConfig {
     public boolean openWorkstationEnabled = true;
     public boolean openGetItemEnabled = true;
     public boolean gameModeWheelEnabled = true;
+    public String gameModeWheelExcludeItem = "minecraft:stick";
 
     // --- 新增：觸發模式設定 ---
     public boolean openMenuOnRelease = true;

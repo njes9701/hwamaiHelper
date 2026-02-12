@@ -49,7 +49,22 @@ public class KeyBindingHandler {
         // --- 2. 遊戲模式切換轉盤 ---
         String wheelKey = (config.gameModeWheelKey == null || config.gameModeWheelKey.isEmpty()) ? "alt" : config.gameModeWheelKey;
         boolean isWheelPressed = InputUtils.isBindingPressed(client, wheelKey);
-        if (config.gameModeWheelEnabled && isWheelPressed) {
+        
+        // 檢查是否手持特定排除物品 (主手或副手)
+        boolean isHoldingExcluded = false;
+        if (config.gameModeWheelExcludeItem != null && !config.gameModeWheelExcludeItem.isEmpty()) {
+            net.minecraft.item.ItemStack mainHand = client.player.getMainHandStack();
+            net.minecraft.item.ItemStack offHand = client.player.getOffHandStack();
+            
+            String mainId = net.minecraft.registry.Registries.ITEM.getId(mainHand.getItem()).toString();
+            String offId = net.minecraft.registry.Registries.ITEM.getId(offHand.getItem()).toString();
+            
+            if (mainId.equals(config.gameModeWheelExcludeItem) || offId.equals(config.gameModeWheelExcludeItem)) {
+                isHoldingExcluded = true;
+            }
+        }
+
+        if (config.gameModeWheelEnabled && isWheelPressed && !isHoldingExcluded) {
              client.setScreen(new org.NJ.hwamaihelper.client.screens.GameModeWheelScreen());
              updateAllKeyStates(client, config);
              return;
