@@ -9,6 +9,7 @@ public class NJConfig {
     // 基礎設定值
     public boolean enabled = true;
     public boolean autoReplenishFireworks = false;
+    public boolean enableEnglishSearch = true;
 
     // --- 新增：開啟介面的快捷鍵設定 ---
     public String openMenuKey = "X + F";

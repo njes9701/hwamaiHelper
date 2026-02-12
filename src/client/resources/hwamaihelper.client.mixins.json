@@ -4,6 +4,7 @@
   "package": "org.NJ.hwamaihelper.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "ItemStackMixin"
   ],
   "injectors": {
     "defaultRequire": 1

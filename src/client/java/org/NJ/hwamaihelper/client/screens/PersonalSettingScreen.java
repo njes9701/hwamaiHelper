@@ -18,6 +18,7 @@ public class PersonalSettingScreen implements NJTab {
     private KeyBindingComponent openGetItemBinding;
     private KeyBindingComponent gameModeWheelBinding;
     private KeyBindingComponent replenishFireworksBinding;
+    private KeyBindingComponent englishSearchBinding;
 
     private int screenWidth;
 
@@ -60,6 +61,12 @@ public class PersonalSettingScreen implements NJTab {
                 "煙火自動補充", "", "", true, config.autoReplenishFireworks,
                 null, val -> config.autoReplenishFireworks = val
         );
+
+        this.englishSearchBinding = new KeyBindingComponent(
+                startX, 155, 300,
+                "創造物品英文搜尋", "", "", true, config.enableEnglishSearch,
+                null, val -> config.enableEnglishSearch = val
+        );
     }
 
     @Override
@@ -70,11 +77,15 @@ public class PersonalSettingScreen implements NJTab {
         openGetItemBinding.render(context, mouseX, mouseY, delta);
         gameModeWheelBinding.render(context, mouseX, mouseY, delta);
         replenishFireworksBinding.render(context, mouseX, mouseY, delta);
+        englishSearchBinding.render(context, mouseX, mouseY, delta);
 
         // 額外繪製煙火補充的 Tooltip
         int centerX = (this.screenWidth + 100) / 2;
         if (mouseX >= centerX - 150 && mouseX <= centerX + 150 && mouseY >= 130 && mouseY <= 150) {
              context.drawTooltip(client.textRenderer, Text.of("當煙火數量小於5個且使用時自動補充"), mouseX, mouseY);
+        }
+        if (mouseX >= centerX - 150 && mouseX <= centerX + 150 && mouseY >= 155 && mouseY <= 175) {
+             context.drawTooltip(client.textRenderer, Text.of("開啟後可在創造模式內使用英文搜尋物品"), mouseX, mouseY);
         }
     }
 
@@ -84,7 +95,8 @@ public class PersonalSettingScreen implements NJTab {
         if (openWorkstationBinding.mouseClicked(click)) return true;
         if (openGetItemBinding.mouseClicked(click)) return true;
         if (gameModeWheelBinding.mouseClicked(click)) return true;
-        return replenishFireworksBinding.mouseClicked(click);
+        if (replenishFireworksBinding.mouseClicked(click)) return true;
+        return englishSearchBinding.mouseClicked(click);
     }
 
     @Override
@@ -93,7 +105,8 @@ public class PersonalSettingScreen implements NJTab {
         if (openWorkstationBinding.keyPressed(input)) return true;
         if (openGetItemBinding.keyPressed(input)) return true;
         if (gameModeWheelBinding.keyPressed(input)) return true;
-        return replenishFireworksBinding.keyPressed(input);
+        if (replenishFireworksBinding.keyPressed(input)) return true;
+        return englishSearchBinding.keyPressed(input);
     }
 
     @Override
@@ -102,7 +115,8 @@ public class PersonalSettingScreen implements NJTab {
         if (openWorkstationBinding.keyReleased(input)) return true;
         if (openGetItemBinding.keyReleased(input)) return true;
         if (gameModeWheelBinding.keyReleased(input)) return true;
-        return replenishFireworksBinding.keyReleased(input);
+        if (replenishFireworksBinding.keyReleased(input)) return true;
+        return englishSearchBinding.keyReleased(input);
     }
 
     @Override
