@@ -13,17 +13,18 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
-    @Inject(method = "getTooltip", at = @At("RETURN"))
+    @Inject(method = "getTooltip", at = @At("RETURN"), cancellable = true)
     private void onGetTooltip(Item.TooltipContext context, PlayerEntity player, TooltipType type, CallbackInfoReturnable<List<Text>> cir) {
         if (!NJConfigManager.getInstance().enableEnglishSearch) {
             return;
         }
 
-        List<Text> tooltip = cir.getReturnValue();
+        List<Text> tooltip = new ArrayList<>(cir.getReturnValue());
         ItemStack stack = (ItemStack) (Object) this;
         String translationKey = stack.getItem().getTranslationKey();
 
@@ -44,6 +45,7 @@ public abstract class ItemStackMixin {
                 // Add English name in dark gray to the tooltip.
                 // This makes it searchable in the creative inventory.
                 tooltip.add(Text.literal(englishName).formatted(Formatting.DARK_GRAY));
+                cir.setReturnValue(tooltip);
             }
         }
     }
