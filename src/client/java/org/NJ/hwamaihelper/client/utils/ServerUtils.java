@@ -1,14 +1,14 @@
 package org.NJ.hwamaihelper.client.utils;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ServerData;
 
 public class ServerUtils {
-    public static boolean isChungHwaServer(MinecraftClient client) {
+    public static boolean isChungHwaServer(Minecraft client) {
         if (client == null) return false;
-        ServerInfo serverInfo = client.getCurrentServerEntry();
+        ServerData serverInfo = client.getCurrentServer();
         if (serverInfo == null) return false;
-        String address = serverInfo.address.toLowerCase();
+        String address = serverInfo.ip.toLowerCase();
         return address.contains("mc.chunghwamc.com");
     }
 }

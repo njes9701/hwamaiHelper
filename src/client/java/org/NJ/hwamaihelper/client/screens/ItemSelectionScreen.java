@@ -1,26 +1,28 @@
 package org.NJ.hwamaihelper.client.screens;
 
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.Text;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import org.NJ.hwamaihelper.client.utils.EnglishTranslationHelper;
+import org.NJ.hwamaihelper.config.NJConfigManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ItemSelectionScreen extends Screen {
     private final Screen parent;
     private final Consumer<String> onSelect;
-    private TextFieldWidget searchBox;
+    private EditBox searchBox;
     private List<Item> allItems;
     private List<Item> filteredItems;
     private int scrollOffset = 0;
@@ -29,7 +31,7 @@ public class ItemSelectionScreen extends Screen {
     private final int slotSize = 20;
 
     public ItemSelectionScreen(Screen parent, Consumer<String> onSelect) {
-        super(Text.of("選擇物品"));
+        super(Component.literal("選擇物品"));
         this.parent = parent;
         this.onSelect = onSelect;
     }
@@ -43,32 +45,58 @@ public class ItemSelectionScreen extends Screen {
         this.itemsPerRow = Math.max(5, availableWidth / slotSize);
         this.rowsPerPage = Math.max(3, availableHeight / slotSize);
 
-        this.searchBox = new TextFieldWidget(textRenderer, width / 2 - 100, 15, 200, 20, Text.of("搜尋物品..."));
-        this.searchBox.setChangedListener(this::filterItems);
-        this.addSelectableChild(this.searchBox);
+        this.searchBox = new EditBox(font, width / 2 - 100, 15, 200, 20, Component.literal("搜尋物品..."));
+        this.searchBox.setResponder(this::filterItems);
+        this.addWidget(this.searchBox);
         this.setInitialFocus(this.searchBox);
 
         if (allItems == null) {
-            allItems = Registries.ITEM.stream().collect(Collectors.toList());
+            allItems = BuiltInRegistries.ITEM.stream().collect(Collectors.toList());
             filteredItems = new ArrayList<>(allItems);
         }
     }
 
     private void filterItems(String query) {
-        String lowerQuery = query.toLowerCase();
+        String normalizedQuery = normalizeSearchText(query);
+        boolean englishSearchEnabled = NJConfigManager.getInstance().enableEnglishSearch;
+
         filteredItems = allItems.stream()
                 .filter(item -> {
-                    String id = Registries.ITEM.getId(item).toString().toLowerCase();
-                    String name = item.getName().getString().toLowerCase();
-                    String enName = EnglishTranslationHelper.translate(item.getTranslationKey()).toLowerCase();
-                    return id.contains(lowerQuery) || name.contains(lowerQuery) || enName.contains(lowerQuery);
+                    String id = BuiltInRegistries.ITEM.getKey(item).toString();
+                    String idPath = BuiltInRegistries.ITEM.getKey(item).getPath();
+                    String name = Component.translatable(item.getDescriptionId()).getString();
+                    String enName = englishSearchEnabled ? EnglishTranslationHelper.translate(item.getDescriptionId()) : "";
+
+                    return containsSearchText(normalizedQuery, id, idPath, name, enName);
                 })
                 .collect(Collectors.toList());
         scrollOffset = 0;
     }
 
+    private static boolean containsSearchText(String query, String... values) {
+        if (query.isEmpty()) {
+            return true;
+        }
+
+        for (String value : values) {
+            if (normalizeSearchText(value).contains(query)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static String normalizeSearchText(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        return value.toLowerCase(Locale.ROOT).replace('_', ' ').trim();
+    }
+
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         // 渲染全螢幕背景暗化
         context.fill(0, 0, this.width, this.height, 0x80000000);
         
@@ -80,7 +108,7 @@ public class ItemSelectionScreen extends Screen {
         // 渲染容器背景
         context.fill(startX - 5, startY - 5, startX + gridWidth + 5, startY + gridHeight + 5, 0xCC000000);
         
-        searchBox.render(context, mouseX, mouseY, delta);
+        searchBox.extractRenderState(context, mouseX, mouseY, delta);
 
         for (int i = 0; i < itemsPerRow * rowsPerPage; i++) {
             int index = i + scrollOffset * itemsPerRow;
@@ -96,7 +124,7 @@ public class ItemSelectionScreen extends Screen {
                 context.fill(x, y, x + slotSize, y + slotSize, 0x55FFFFFF);
             }
             
-            context.drawItem(new ItemStack(item), x + 2, y + 2);
+            context.item(new ItemStack(item), x + 2, y + 2);
         }
 
         // 渲染 Tooltip (放在最後確保不被遮擋)
@@ -107,15 +135,15 @@ public class ItemSelectionScreen extends Screen {
             int y = startY + (i / itemsPerRow) * slotSize;
             if (mouseX >= x && mouseX < x + slotSize && mouseY >= y && mouseY < y + slotSize) {
                 Item item = filteredItems.get(index);
-                context.drawTooltip(textRenderer, item.getName(), mouseX, mouseY);
+                context.setTooltipForNextFrame(font, Component.translatable(item.getDescriptionId()), mouseX, mouseY);
             }
         }
 
-        super.render(context, mouseX, mouseY, delta);
+        super.extractRenderState(context, mouseX, mouseY, delta);
     }
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubled) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
         if (searchBox.mouseClicked(click, doubled)) return true;
 
         int gridWidth = itemsPerRow * slotSize;
@@ -133,8 +161,8 @@ public class ItemSelectionScreen extends Screen {
 
             if (mouseX >= x && mouseX < x + slotSize && mouseY >= y && mouseY < y + slotSize) {
                 Item item = filteredItems.get(index);
-                onSelect.accept(Registries.ITEM.getId(item).toString());
-                client.setScreen(parent);
+                onSelect.accept(BuiltInRegistries.ITEM.getKey(item).toString());
+                this.minecraft.setScreenAndShow(parent);
                 return true;
             }
         }
@@ -154,21 +182,21 @@ public class ItemSelectionScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(KeyInput input) {
+    public boolean keyPressed(KeyEvent input) {
         if (input.key() == 256) { // ESC
-            client.setScreen(parent);
+            this.minecraft.setScreenAndShow(parent);
             return true;
         }
         return searchBox.keyPressed(input) || super.keyPressed(input);
     }
 
     @Override
-    public boolean charTyped(CharInput input) {
+    public boolean charTyped(CharacterEvent input) {
         return searchBox.charTyped(input);
     }
 
     @Override
-    public void close() {
-        client.setScreen(parent);
+    public void onClose() {
+        this.minecraft.setScreenAndShow(parent);
     }
 }

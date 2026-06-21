@@ -2,9 +2,9 @@
   "required": true,
   "minVersion": "0.8",
   "package": "org.NJ.hwamaihelper.mixin.client",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "client": [
-    "ItemStackMixin"
+    "CreativeModeInventoryScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,10 +1,10 @@
 package org.NJ.hwamaihelper.client.components;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
 import org.NJ.hwamaihelper.client.utils.NickSection;
 import org.NJ.hwamaihelper.config.NJConfig;
 import org.NJ.hwamaihelper.config.NJConfigManager;
@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SaveSlotPanel {
-    private final MinecraftClient client = MinecraftClient.getInstance();
-    private final List<ButtonWidget> saveSlotButtons = new ArrayList<>();
-    private final List<ButtonWidget> deleteSlotButtons = new ArrayList<>();
+    private final Minecraft client = Minecraft.getInstance();
+    private final List<Button> saveSlotButtons = new ArrayList<>();
+    private final List<Button> deleteSlotButtons = new ArrayList<>();
 
     private List<NickSection> hoveredSections = null;
 
@@ -36,18 +36,18 @@ public class SaveSlotPanel {
                 int slotY = 65 + (i * 25); // 稍微調大一點間距，看起來更舒服
 
                 // 存檔套用按鈕
-                ButtonWidget slotBtn = ButtonWidget.builder(Text.of("存檔 " + (slotIndex + 1)), b -> {
+                Button slotBtn = Button.builder(Component.literal("存檔 " + (slotIndex + 1)), b -> {
                     // 套用時建議進行深拷貝 (Deep Copy)，避免直接修改存檔內容
                     List<NickSection> sections = config.savedNicknames.get(slotIndex).sections;
                     callbacks.onApplySave(deepCopy(sections));
-                }).dimensions(rightPanelX, slotY, 60, 20).build();
+                }).bounds(rightPanelX, slotY, 60, 20).build();
 
                 // 刪除按鈕
-                ButtonWidget delBtn = ButtonWidget.builder(Text.of("§c✕"), b -> {
+                Button delBtn = Button.builder(Component.literal("§c✕"), b -> {
                     config.savedNicknames.remove(slotIndex);
                     NJConfigManager.save();
                     callbacks.onRefreshRequest();
-                }).dimensions(rightPanelX + 62, slotY, 20, 20).build();
+                }).bounds(rightPanelX + 62, slotY, 20, 20).build();
 
                 saveSlotButtons.add(slotBtn);
                 deleteSlotButtons.add(delBtn);
@@ -55,21 +55,21 @@ public class SaveSlotPanel {
         }
     }
 
-    public void render(DrawContext context, int mouseX, int mouseY, float delta, int rightPanelX, int width, int height) {
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta, int rightPanelX, int width, int height) {
         // 1. 繪製背景與標題
         context.fill(rightPanelX - 5, 55, width, height, 0x55000000); // 稍微加深透明背景
-        context.drawTextWithShadow(client.textRenderer, "§6★ §f快速切換", rightPanelX, 45, 0xFFFFFFFF);
+        context.text(client.font, "§6★ §f快速切換", rightPanelX, 45, 0xFFFFFFFF);
 
         // 2. 渲染按鈕與偵測懸停
         hoveredSections = null;
         NJConfig config = NJConfigManager.getInstance();
 
         for (int i = 0; i < saveSlotButtons.size(); i++) {
-            ButtonWidget btn = saveSlotButtons.get(i);
-            ButtonWidget del = deleteSlotButtons.get(i);
+            Button btn = saveSlotButtons.get(i);
+            Button del = deleteSlotButtons.get(i);
 
-            btn.render(context, mouseX, mouseY, delta);
-            del.render(context, mouseX, mouseY, delta);
+            btn.extractRenderState(context, mouseX, mouseY, delta);
+            del.extractRenderState(context, mouseX, mouseY, delta);
 
             // 當滑鼠停留在存檔按鈕上時
             if (btn.isMouseOver(mouseX, mouseY)) {
@@ -89,9 +89,9 @@ public class SaveSlotPanel {
                 .collect(Collectors.toList());
     }
 
-    public boolean mouseClicked(Click click, boolean d) {
-        for (ButtonWidget slot : saveSlotButtons) if (slot.mouseClicked(click, d)) return true;
-        for (ButtonWidget del : deleteSlotButtons) if (del.mouseClicked(click, d)) return true;
+    public boolean mouseClicked(MouseButtonEvent click, boolean d) {
+        for (Button slot : saveSlotButtons) if (slot.mouseClicked(click, d)) return true;
+        for (Button del : deleteSlotButtons) if (del.mouseClicked(click, d)) return true;
         return false;
     }
 

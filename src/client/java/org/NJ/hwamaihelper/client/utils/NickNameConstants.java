@@ -1,9 +1,9 @@
 package org.NJ.hwamaihelper.client.utils;
 
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 import java.awt.Color;
 
@@ -36,46 +36,46 @@ public class NickNameConstants {
         };
     }
 
-    public static MutableText getPreview(NickSection s) {
+    public static MutableComponent getPreview(NickSection s) {
         String text = (s.text == null || s.text.isEmpty()) ? "預覽文字" : s.text;
         int len = text.length();
 
         // 2. 處理逐字漸層預覽
         if (s.has("gradient")) {
-            MutableText gradientPreview = Text.empty();
+            MutableComponent gradientPreview = Component.empty();
             int colorStart = ColorUtils.hexToInt(s.color);
             int colorEnd = ColorUtils.hexToInt(s.color2);
 
             for (int i = 0; i < len; i++) {
                 float ratio = (len > 1) ? (float) i / (len - 1) : 0f;
                 int charColor = ColorUtils.interpolate(colorStart, colorEnd, ratio);
-                gradientPreview.append(Text.literal(String.valueOf(text.charAt(i)))
-                        .styled(st -> applyStyles(st.withColor(charColor), s)));
+                gradientPreview.append(Component.literal(String.valueOf(text.charAt(i)))
+                        .withStyle(st -> applyStyles(st.withColor(charColor), s)));
             }
             return gradientPreview;
         }
 
         // 3. 處理逐字彩虹預覽
         if (s.has("rainbow")) {
-            MutableText rainbowPreview = Text.empty();
+            MutableComponent rainbowPreview = Component.empty();
             for (int i = 0; i < len; i++) {
                 float hue = (float) i / Math.max(1, len);
                 int charColor = Color.HSBtoRGB(hue, 0.7f, 0.9f) & 0xFFFFFF;
 
-                rainbowPreview.append(Text.literal(String.valueOf(text.charAt(i)))
-                        .styled(st -> applyStyles(st.withColor(charColor), s)));
+                rainbowPreview.append(Component.literal(String.valueOf(text.charAt(i)))
+                        .withStyle(st -> applyStyles(st.withColor(charColor), s)));
             }
             return rainbowPreview;
         }
 
         // 4. 處理一般單色效果
-        return Text.literal(text).styled(style -> applyStyles(style.withColor(ColorUtils.hexToInt(s.color)), s));
+        return Component.literal(text).withStyle(style -> applyStyles(style.withColor(ColorUtils.hexToInt(s.color)), s));
     }
 
-    public static MutableText getShadowOnly(NickSection s) {
+    public static MutableComponent getShadowOnly(NickSection s) {
         String text = (s.text == null || s.text.isEmpty()) ? "預覽文字" : s.text;
         // Shadow is always single color (s.shadowColor)
-        return Text.literal(text).styled(style -> applyStyles(style.withColor(ColorUtils.hexToInt(s.shadowColor)), s));
+        return Component.literal(text).withStyle(style -> applyStyles(style.withColor(ColorUtils.hexToInt(s.shadowColor)), s));
     }
 
     public static Style applyStyles(Style style, NickSection s) {
@@ -83,9 +83,9 @@ public class NickNameConstants {
 
         if (s.effect.contains("bold")) style = style.withBold(true);
         if (s.effect.contains("italic")) style = style.withItalic(true);
-        if (s.effect.contains("underlined")) style = style.withFormatting(Formatting.UNDERLINE);
-        if (s.effect.contains("strikethrough")) style = style.withFormatting(Formatting.STRIKETHROUGH);
-        if (s.effect.contains("obfuscated")) style = style.withFormatting(Formatting.OBFUSCATED);
+        if (s.effect.contains("underlined")) style = style.withUnderlined(true);
+        if (s.effect.contains("strikethrough")) style = style.withStrikethrough(true);
+        if (s.effect.contains("obfuscated")) style = style.withObfuscated(true);
 
         return style;
     }

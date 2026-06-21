@@ -1,6 +1,6 @@
 package org.NJ.hwamaihelper.client.components;
 
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.NJ.hwamaihelper.client.utils.ColorUtils;
 
 import java.awt.Color;
@@ -16,7 +16,7 @@ public class ColorPickerComponent {
         this.size = size;
     }
 
-    public void render(DrawContext context, String hex) {
+    public void extractRenderState(GuiGraphicsExtractor context, String hex) {
         float[] hsb = ColorUtils.hexToHsb(hex);
 
         // 1. 繪製半透明背景底框 (增加質感)
@@ -56,11 +56,11 @@ public class ColorPickerComponent {
         context.fill(dotX - 1, dotY - 1, dotX + 1, dotY + 1, 0xFF000000);
     }
 
-    public boolean isClickInHue(double mx, double my) {
+    public boolean isMouseButtonEventInHue(double mx, double my) {
         return mx >= x + size + 5 && mx <= x + size + 5 + hueWidth && my >= y && my <= y + size;
     }
 
-    public boolean isClickInBox(double mx, double my) {
+    public boolean isMouseButtonEventInBox(double mx, double my) {
         return mx >= x && mx <= x + size && my >= y && my <= y + size;
     }
 
@@ -70,9 +70,9 @@ public class ColorPickerComponent {
         float s = hsb[1];
         float b = hsb[2];
 
-        if (isClickInHue(mx, my)) {
+        if (isMouseButtonEventInHue(mx, my)) {
             h = (float)(my - y) / size;
-        } else if (isClickInBox(mx, my)) {
+        } else if (isMouseButtonEventInBox(mx, my)) {
             s = (float)(mx - x) / size;
             b = 1.0f - (float)(my - y) / size;
         }

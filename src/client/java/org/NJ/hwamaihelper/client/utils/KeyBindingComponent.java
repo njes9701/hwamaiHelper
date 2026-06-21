@@ -1,11 +1,11 @@
 package org.NJ.hwamaihelper.client.utils;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashSet;
@@ -13,12 +13,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class KeyBindingComponent {
-    private final MinecraftClient client = MinecraftClient.getInstance();
+    private final Minecraft client = Minecraft.getInstance();
     private final String label;
     private final String defaultKey;
-    private final ButtonWidget resetBtn;
-    private final ButtonWidget triggerModeBtn;
-    private final ButtonWidget toggleBtn;
+    private final Button resetBtn;
+    private final Button triggerModeBtn;
+    private final Button toggleBtn;
 
     // 顯示框的座標與大小
     private final int x, y, width;
@@ -28,7 +28,7 @@ public class KeyBindingComponent {
     private boolean onRelease = true;
     private boolean enabled = true;
     private final Set<Integer> pressedKeys = new HashSet<>();
-    private String currentText;
+    private String currentComponent;
     private java.util.function.Consumer<Boolean> onTriggerModeChanged;
     private java.util.function.Consumer<Boolean> onToggleChanged;
 
@@ -41,7 +41,7 @@ public class KeyBindingComponent {
         this.width = width; // 這裡的 width 將作為參考總寬
         this.label = label;
         this.defaultKey = defaultKey;
-        this.currentText = (currentKey != null) ? currentKey : defaultKey;
+        this.currentComponent = (currentKey != null) ? currentKey : defaultKey;
         this.onRelease = initialOnRelease;
         this.enabled = initialEnabled;
         this.onTriggerModeChanged = onTriggerModeChanged;
@@ -69,38 +69,38 @@ public class KeyBindingComponent {
         this.fieldY = y;
 
         // 3. 主開關區 (模式按鈕 + 開關按鈕)
-        this.triggerModeBtn = ButtonWidget.builder(getTriggerModeText(), b -> {
+        this.triggerModeBtn = Button.builder(getTriggerModeComponent(), b -> {
             this.onRelease = !this.onRelease;
-            b.setMessage(getTriggerModeText());
+            b.setMessage(getTriggerModeComponent());
             if (this.onTriggerModeChanged != null) {
                 this.onTriggerModeChanged.accept(this.onRelease);
             }
-        }).dimensions(switchesX, y, modeButtonWidth, 20).build();
+        }).bounds(switchesX, y, modeButtonWidth, 20).build();
 
-        this.toggleBtn = ButtonWidget.builder(getToggleText(), b -> {
+        this.toggleBtn = Button.builder(getToggleComponent(), b -> {
             this.enabled = !this.enabled;
-            b.setMessage(getToggleText());
+            b.setMessage(getToggleComponent());
             if (this.onToggleChanged != null) {
                 this.onToggleChanged.accept(this.enabled);
             }
-        }).dimensions(switchesX + modeButtonWidth + spacing, y, toggleButtonWidth, 20).build();
+        }).bounds(switchesX + modeButtonWidth + spacing, y, toggleButtonWidth, 20).build();
 
         // 4. 按鍵重置區 (重置按鈕)
-        this.resetBtn = ButtonWidget.builder(Text.of("重置"), b -> {
-            this.currentText = this.defaultKey;
+        this.resetBtn = Button.builder(Component.literal("重置"), b -> {
+            this.currentComponent = this.defaultKey;
             this.isRecording = false;
-        }).dimensions(resetX, y, resetButtonWidth, 20).build();
+        }).bounds(resetX, y, resetButtonWidth, 20).build();
     }
 
-    private Text getTriggerModeText() {
-        return Text.of(onRelease ? "§7放開觸發" : "§b按下觸發");
+    private Component getTriggerModeComponent() {
+        return Component.literal(onRelease ? "§7放開觸發" : "§b按下觸發");
     }
 
-    private Text getToggleText() {
-        return Text.of(enabled ? "§a開" : "§c關");
+    private Component getToggleComponent() {
+        return Component.literal(enabled ? "§a開" : "§c關");
     }
 
-    private String convertToText(Set<Integer> keys) {
+    private String convertToComponent(Set<Integer> keys) {
         if (keys.isEmpty()) return "";
         return keys.stream()
                 .map(this::getKeyName)
@@ -108,6 +108,15 @@ public class KeyBindingComponent {
     }
 
     private String getKeyName(int keyCode) {
+        if (keyCode == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            return "Mouse_Left";
+        }
+        if (keyCode == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+            return "Mouse_Right";
+        }
+        if (keyCode == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
+            return "Mouse_Middle";
+        }
         return switch (keyCode) {
             case GLFW.GLFW_KEY_LEFT_CONTROL -> "Left_Ctrl";
             case GLFW.GLFW_KEY_RIGHT_CONTROL -> "Right_Ctrl";
@@ -147,37 +156,40 @@ public class KeyBindingComponent {
             case GLFW.GLFW_KEY_KP_DECIMAL -> "NumPad_Decimal";
             case GLFW.GLFW_KEY_KP_EQUAL -> "NumPad_Equal";
             default -> {
+                if (keyCode <= GLFW.GLFW_KEY_UNKNOWN) {
+                    yield "Key_" + keyCode;
+                }
                 String name = GLFW.glfwGetKeyName(keyCode, 0);
                 yield (name != null) ? name.toUpperCase() : "Key_" + keyCode;
             }
         };
     }
 
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         // 1. 渲染左側標籤
-        context.drawTextWithShadow(client.textRenderer, label, x, y + 6, -1);
+        context.text(client.font, label, x, y + 6, -1);
 
         // 2. 只有在有按鍵綁定內容時才繪製背景與邊框
-        if (currentText != null && !currentText.isEmpty()) {
+        if (currentComponent != null && !currentComponent.isEmpty()) {
             context.fill(fieldX, fieldY, fieldX + fieldW, fieldY + fieldH, 0xFF000000);
             int borderColor = isRecording ? 0xFFFFFFFF : 0xFF707070;
-            context.drawStrokedRectangle(fieldX, fieldY, fieldW, fieldH, borderColor);
+            context.outline(fieldX, fieldY, fieldW, fieldH, borderColor);
 
             // 3. 【修正重點】判斷顯示文字
             String display;
             if (isRecording) {
                 // 只要按下過任何鍵，就不再顯示提示文字
-                display = pressedKeys.isEmpty() ? "> 按下鍵 <" : currentText;
+                display = pressedKeys.isEmpty() ? "> 按下鍵 <" : currentComponent;
             } else {
-                display = currentText;
+                display = currentComponent;
             }
-            String displayText = display; // Use a new variable for the potentially truncated text
+            String displayComponent = display; // Use a new variable for the potentially truncated text
 
-            int maxTextWidth = fieldW - 4; // Allow some padding (e.g., 2 pixels on each side)
-            int actualTextWidth = client.textRenderer.getWidth(displayText);
+            int maxComponentWidth = fieldW - 4; // Allow some padding (e.g., 2 pixels on each side)
+            int actualComponentWidth = client.font.width(displayComponent);
 
-            if (actualTextWidth > maxTextWidth) {
-                displayText = client.textRenderer.trimToWidth(displayText, maxTextWidth - client.textRenderer.getWidth("...")) + "...";
+            if (actualComponentWidth > maxComponentWidth) {
+                displayComponent = client.font.plainSubstrByWidth(displayComponent, maxComponentWidth - client.font.width("...")) + "...";
             }
 
             // 4. 渲染文本 (左對齊)
@@ -186,26 +198,26 @@ public class KeyBindingComponent {
 
             // 錄製時使用黃色或亮色，讓玩家知道正在輸入
             int textColor = isRecording ? 0xFFFFFF55 : -1;
-            context.drawTextWithShadow(client.textRenderer, displayText, tx, ty, textColor);
+            context.text(client.font, displayComponent, tx, ty, textColor);
         }
 
         // 5. 渲染按鈕
-        if (onTriggerModeChanged != null) triggerModeBtn.render(context, mouseX, mouseY, delta);
-        if (onToggleChanged != null) toggleBtn.render(context, mouseX, mouseY, delta);
-        if (currentText != null && !currentText.isEmpty()) {
-            resetBtn.render(context, mouseX, mouseY, delta);
+        if (onTriggerModeChanged != null) triggerModeBtn.extractRenderState(context, mouseX, mouseY, delta);
+        if (onToggleChanged != null) toggleBtn.extractRenderState(context, mouseX, mouseY, delta);
+        if (currentComponent != null && !currentComponent.isEmpty()) {
+            resetBtn.extractRenderState(context, mouseX, mouseY, delta);
         }
     }
 
-    public boolean mouseClicked(Click click) {
-        if (currentText != null && !currentText.isEmpty()) {
+    public boolean mouseClicked(MouseButtonEvent click) {
+        if (currentComponent != null && !currentComponent.isEmpty()) {
             if (resetBtn.mouseClicked(click, false)) return true;
         }
         if (onTriggerModeChanged != null && triggerModeBtn.mouseClicked(click, false)) return true;
         if (onToggleChanged != null && toggleBtn.mouseClicked(click, false)) return true;
 
         // 只有在有綁定的情況下才處理點擊
-        if (currentText != null && !currentText.isEmpty()) {
+        if (currentComponent != null && !currentComponent.isEmpty()) {
             // 如果目前正在錄製，且點擊在顯示框外面，則取消錄製
             if (isRecording && !(click.x() >= fieldX && click.x() <= fieldX + fieldW &&
                                  click.y() >= fieldY && click.y() <= fieldY + fieldH)) {
@@ -220,7 +232,7 @@ public class KeyBindingComponent {
                     // 如果已經在錄製中，再次點擊顯示框則記錄滑鼠按鍵並結束錄製
                     pressedKeys.clear(); // 清除之前的按鍵
                     pressedKeys.add(click.button());
-                    this.currentText = convertToText(pressedKeys);
+                    this.currentComponent = convertToComponent(pressedKeys);
                     isRecording = false;
                     return true;
                 } else {
@@ -234,21 +246,21 @@ public class KeyBindingComponent {
         return false;
     }
 
-    public boolean keyPressed(KeyInput input) {
+    public boolean keyPressed(KeyEvent input) {
         if (isRecording) {
             int code = input.key();
             if (code == GLFW.GLFW_KEY_ENTER || code == GLFW.GLFW_KEY_KP_ENTER || code == GLFW.GLFW_KEY_ESCAPE) {
-                isRecording = false; // 這裡結束錄製後，render 就會切換回顯示 currentText
+                isRecording = false; // 這裡結束錄製後，render 就會切換回顯示 currentComponent
                 return true;
             }
             pressedKeys.add(code); // 這裡加入集合
-            this.currentText = convertToText(pressedKeys); // 同步更新保存用的變數
+            this.currentComponent = convertToComponent(pressedKeys); // 同步更新保存用的變數
             return true;
         }
         return false;
     }
 
-    public boolean keyReleased(KeyInput input) {
+    public boolean keyReleased(KeyEvent input) {
         if (isRecording) {
             return true;
         }
@@ -256,6 +268,6 @@ public class KeyBindingComponent {
     }
 
     public String getValue() {
-        return currentText;
+        return currentComponent;
     }
 }

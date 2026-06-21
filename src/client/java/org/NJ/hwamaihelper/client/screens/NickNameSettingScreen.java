@@ -1,10 +1,10 @@
 package org.NJ.hwamaihelper.client.screens;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import org.NJ.hwamaihelper.client.components.*;
 import org.NJ.hwamaihelper.client.logic.NickNameManager;
 import org.NJ.hwamaihelper.client.utils.NickSection;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class NickNameSettingScreen implements NJTab {
-    private final MinecraftClient client = MinecraftClient.getInstance();
+    private final Minecraft client = Minecraft.getInstance();
     private final NickNameManager manager = new NickNameManager();
 
     private final NickPreviewHeader header = new NickPreviewHeader();
@@ -74,12 +74,12 @@ public class NickNameSettingScreen implements NJTab {
             @Override
             public void onApply() {
                 editor.syncToManager(manager);
-                client.player.networkHandler.sendChatCommand("chmc 設定 自己 暱稱 " + manager.buildCommand());
+                client.player.connection.sendCommand("chmc 設定 自己 暱稱 " + manager.buildCommand());
             }
 
             @Override
             public void onCancel() {
-                client.player.networkHandler.sendChatCommand("chmc 設定 自己 取消暱稱");
+                client.player.connection.sendCommand("chmc 設定 自己 取消暱稱");
             }
 
             @Override
@@ -105,32 +105,32 @@ public class NickNameSettingScreen implements NJTab {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         editor.syncToManager(manager);
         int centerX = (width / 2) + 15;
 
-        header.render(context, width, manager, saveSlots.getHoveredSections());
+        header.extractRenderState(context, width, manager, saveSlots.getHoveredSections());
 
         context.enableScissor(0, 55, width, height); // 放寬剪裁範圍確保渲染
-        editor.render(context, mouseX, mouseY, delta, this.height);
-        actions.render(context, mouseX, mouseY, delta);
-        saveSlots.render(context, mouseX, mouseY, delta, Math.max(centerX + 120, width - 85), width, height);
+        editor.extractRenderState(context, mouseX, mouseY, delta, this.height);
+        actions.extractRenderState(context, mouseX, mouseY, delta);
+        saveSlots.extractRenderState(context, mouseX, mouseY, delta, Math.max(centerX + 120, width - 85), width, height);
         context.disableScissor();
 
         if (showPicker && manager.activeColorIndex < manager.sections.size()) {
             NickSection s = manager.sections.get(manager.activeColorIndex);
             String displayHex = (activeColorTarget == 2) ?
                     (s.has("shadow") ? s.shadowColor : s.color2) : s.color;
-            picker.render(context, displayHex);
+            picker.extractRenderState(context, displayHex);
         }
     }
 
     @Override
-    public boolean mouseClicked(Click click, boolean d) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean d) {
         double mx = click.x();
         double my = click.y();
 
-        if (showPicker && (picker.isClickInHue(mx, my) || picker.isClickInBox(mx, my))) {
+        if (showPicker && (picker.isMouseButtonEventInHue(mx, my) || picker.isMouseButtonEventInBox(mx, my))) {
             updateColor(mx, my);
             return true;
         }
@@ -189,13 +189,13 @@ public class NickNameSettingScreen implements NJTab {
 
     /**
      * 修正：鍵盤輸入轉發
-     * 必須從 CharInput 提取原始 char 與 modifiers
+     * 必須從 CharacterEvent 提取原始 char 與 modifiers
      */
     @Override
-    public boolean charTyped(CharInput i) {
+    public boolean charTyped(CharacterEvent i) {
         for (NickSectionWidget w : editor.sectionWidgets) {
             if (w.textField.isFocused()) {
-                // 直接傳入 CharInput 物件，讓 TextFieldWidget 自己處理
+                // 直接傳入 CharacterEvent 物件，讓 EditBox 自己處理
                 return w.textField.charTyped(i);
             }
         }
@@ -204,10 +204,10 @@ public class NickNameSettingScreen implements NJTab {
 
     /**
      * 修正：按鍵轉發
-     * 同樣需要從 KeyInput 提取原始資料
+     * 同樣需要從 KeyEvent 提取原始資料
      */
     @Override
-    public boolean keyPressed(KeyInput i) {
+    public boolean keyPressed(KeyEvent i) {
         // 處理 ESC 鍵關閉視窗 (256 是 GLFW_KEY_ESCAPE)
         if (i.key() == 256) {
             if (showPicker) {
@@ -215,13 +215,13 @@ public class NickNameSettingScreen implements NJTab {
                 return true;
             }
             this.save();
-            client.setScreen(null);
+            client.setScreenAndShow(null);
             return true;
         }
 
         for (NickSectionWidget w : editor.sectionWidgets) {
             if (w.textField.isFocused()) {
-                // 修正點：直接傳入整個 KeyInput 物件 i
+                // 修正點：直接傳入整個 KeyEvent 物件 i
                 return w.textField.keyPressed(i);
             }
         }
@@ -229,7 +229,7 @@ public class NickNameSettingScreen implements NJTab {
     }
 
     @Override
-    public boolean keyReleased(KeyInput i) {
+    public boolean keyReleased(KeyEvent i) {
         return false;
     }
 
@@ -268,8 +268,8 @@ public class NickNameSettingScreen implements NJTab {
     }
 
     @Override
-    public boolean mouseDragged(Click click, double x, double y) {
-        if (showPicker && (picker.isClickInHue(click.x(), click.y()) || picker.isClickInBox(click.x(), click.y()))) {
+    public boolean mouseDragged(MouseButtonEvent click, double x, double y) {
+        if (showPicker && (picker.isMouseButtonEventInHue(click.x(), click.y()) || picker.isMouseButtonEventInBox(click.x(), click.y()))) {
             updateColor(click.x(), click.y());
             return true;
         }

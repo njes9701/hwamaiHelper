@@ -11,11 +11,18 @@ public class NJConfig {
     public boolean autoReplenishFireworks = false;
     public boolean enableEnglishSearch = true;
 
+    // --- 新增：材質包設定 ---
+    public boolean resourcePackAlwaysApply = false;
+    public java.util.Map<String, String> serverPackMap = new java.util.HashMap<>();
+    public String currentPackName = "未偵測到材質包";
+    public String currentPackId = "";
+
     // --- 新增：開啟介面的快捷鍵設定 ---
     public String openMenuKey = "X + F";
     public String openWorkstationKey = "shift + G";
     public String openGetItemKey = "G";
     public String gameModeWheelKey = "alt";
+    public String quickLandLevelingKey = "";
     
     // 紀錄上次開啟的分頁索引 (0: 指令, 1: 設定, 2: 暱稱)
     public int lastTabIndex = 0;
@@ -26,12 +33,15 @@ public class NJConfig {
     public boolean openWorkstationEnabled = true;
     public boolean openGetItemEnabled = true;
     public boolean gameModeWheelEnabled = true;
+    public boolean quickLandLevelingEnabled = false;
+    public int quickLandLevelingTargetsPerTick = 5;
     public String gameModeWheelExcludeItem = "minecraft:stick";
 
     // --- 新增：觸發模式設定 ---
     public boolean openMenuOnRelease = true;
     public boolean openWorkstationOnRelease = true;
     public boolean openGetItemOnRelease = true;
+    public boolean quickLandLevelingToggleOnRelease = true;
 
     public static class Entry {
         public String command;

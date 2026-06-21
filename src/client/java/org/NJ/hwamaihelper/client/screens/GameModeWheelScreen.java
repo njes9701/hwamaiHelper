@@ -1,12 +1,12 @@
 package org.NJ.hwamaihelper.client.screens;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.network.ServerInfo;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.network.chat.Component;
 import org.NJ.hwamaihelper.client.utils.InputUtils;
 import org.NJ.hwamaihelper.config.NJConfigManager;
 
@@ -15,16 +15,16 @@ public class GameModeWheelScreen extends Screen {
     private int selectedIndex = -1; // 0: Creative, 1: Spectator, 2: Survival
 
     public GameModeWheelScreen() {
-        super(Text.of("Game Mode Wheel"));
+        super(Component.literal("Game Mode Wheel"));
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return false;
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         int centerX = this.width / 2;
         int centerY = this.height / 2;
         int radius = 65;
@@ -78,17 +78,17 @@ public class GameModeWheelScreen extends Screen {
         int survY = centerY + (int)(iconDist * Math.sin(Math.toRadians(150)));
         drawMode(context, survX, survY, new ItemStack(Items.DIAMOND_SWORD), "生存", selectedIndex == 2);
 
-        super.render(context, mouseX, mouseY, delta);
+        super.extractRenderState(context, mouseX, mouseY, delta);
     }
 
-    private void drawCircle(DrawContext context, int cx, int cy, int r, int color) {
+    private void drawCircle(GuiGraphicsExtractor context, int cx, int cy, int r, int color) {
         for (int i = -r; i <= r; i++) {
             int w = (int) Math.sqrt(r * r - i * i);
             context.fill(cx - w, cy + i, cx + w, cy + i + 1, color);
         }
     }
 
-    private void drawCircleOutline(DrawContext context, int cx, int cy, int r, int color) {
+    private void drawCircleOutline(GuiGraphicsExtractor context, int cx, int cy, int r, int color) {
         for (double theta = 0; theta < 2 * Math.PI; theta += 0.01) {
             int x = cx + (int) (r * Math.cos(theta));
             int y = cy + (int) (r * Math.sin(theta));
@@ -96,7 +96,7 @@ public class GameModeWheelScreen extends Screen {
         }
     }
 
-    private void drawSectorHighlight(DrawContext context, int cx, int cy, int r, int index) {
+    private void drawSectorHighlight(GuiGraphicsExtractor context, int cx, int cy, int r, int index) {
         int highlightColor = 0x22FFFFFF;
         int iconDist = 38;
         int hX = cx, hY = cy;
@@ -112,7 +112,7 @@ public class GameModeWheelScreen extends Screen {
         drawCircle(context, hX, hY, 25, highlightColor);
     }
 
-    private void drawDivider(DrawContext context, int cx, int cy, int r, double deg) {
+    private void drawDivider(GuiGraphicsExtractor context, int cx, int cy, int r, double deg) {
         double rad = Math.toRadians(deg);
         for (int i = 0; i < r; i++) {
             int x = cx + (int)(i * Math.cos(rad));
@@ -121,10 +121,10 @@ public class GameModeWheelScreen extends Screen {
         }
     }
 
-    private void drawMode(DrawContext context, int x, int y, ItemStack stack, String label, boolean selected) {
-        context.drawItem(stack, x - 8, y - 12);
+    private void drawMode(GuiGraphicsExtractor context, int x, int y, ItemStack stack, String label, boolean selected) {
+        context.item(stack, x - 8, y - 12);
         int color = selected ? -1 : 0xFFAAAAAA;
-        context.drawCenteredTextWithShadow(textRenderer, Text.of(label), x, y + 6, color);
+        context.centeredText(font, Component.literal(label), x, y + 6, color);
     }
 
     @Override
@@ -132,15 +132,15 @@ public class GameModeWheelScreen extends Screen {
         super.tick();
         String key = NJConfigManager.getInstance().gameModeWheelKey;
         if (key == null || key.isEmpty()) key = "alt";
-        if (!InputUtils.isBindingPressed(client, key)) {
+        if (!InputUtils.isBindingPressed(this.minecraft, key)) {
             executeSelection();
-            this.close();
+            this.onClose();
         }
     }
 
     private void executeSelection() {
-        if (selectedIndex != -1 && client.player != null) {
-            boolean isChungHwa = org.NJ.hwamaihelper.client.utils.ServerUtils.isChungHwaServer(client);
+        if (selectedIndex != -1 && this.minecraft.player != null) {
+            boolean isChungHwa = org.NJ.hwamaihelper.client.utils.ServerUtils.isChungHwaServer(this.minecraft);
 
             String cmd;
             if (isChungHwa) {
@@ -162,7 +162,7 @@ public class GameModeWheelScreen extends Screen {
             }
 
             if (!cmd.isEmpty()) {
-                client.player.networkHandler.sendChatCommand(cmd);
+                this.minecraft.player.connection.sendCommand(cmd);
             }
         }
     }

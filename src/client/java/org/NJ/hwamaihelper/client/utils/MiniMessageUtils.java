@@ -1,7 +1,7 @@
 package org.NJ.hwamaihelper.client.utils;
 
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
 import org.NJ.hwamaihelper.client.utils.NickSection;
 import org.NJ.hwamaihelper.client.utils.NickNameConstants;
 import java.util.List;
@@ -15,8 +15,8 @@ public class MiniMessageUtils {
         return sb.toString();
     }
 
-    public static Text getPreview(List<NickSection> sections) {
-        MutableText preview = Text.literal("");
+    public static Component getPreview(List<NickSection> sections) {
+        MutableComponent preview = Component.literal("");
         for (NickSection section : sections) {
             // 關鍵修正：現在直接傳入整個 section 物件
             // 因為 NickNameConstants.getPreview(NickSection s) 會處理 text, color, color2 和 effect
