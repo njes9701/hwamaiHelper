@@ -1,138 +1,174 @@
 # 華麥助手 (HwamaiHelper)
-# HwamaiHelper
 
-這是一個專為華麥伺服器設計的 Fabric 客戶端輔助模組，提供便捷的快捷鍵、指令選單、暱稱編輯器以及各種自動化功能，旨在提升遊玩體驗。
-A Fabric client-side assistant mod designed specifically for the Hwamai server, providing convenient keybindings, command menus, a nickname editor, and various automation features to enhance the gameplay experience.
+HwamaiHelper 是一個 Fabric 用戶端輔助模組，主要為華麥伺服器設計，提供快捷指令、快速介面、創造欄英文搜尋、暱稱編輯、自動補煙火與快速整地等功能。
 
-## ✨ 主要功能
-## ✨ Main Features
+HwamaiHelper is a Fabric client-side assistant mod designed for the Hwamai server. It provides command shortcuts, quick menus, Creative inventory English search, nickname editing, firework replenishment, and quick land leveling.
 
-### 1. 快捷指令選單
-### 1. Quick Command Menu
-*   **預設快捷鍵**：`X + F` (可自訂)
-*   **Default Keybinding**: `X + F` (Customizable)
-*   提供圖形化介面，快速存取常用指令。
-*   Provides a graphical interface for quick access to common commands.
-*   包含多個功能分頁：指令集、個人設定、暱稱設定。
-*   Includes multiple functional tabs: Command Set, Personal Settings, and Nickname Settings.
+## 版本資訊 (Version)
 
-### 2. 個人設定 (Personal Settings)
-### 2. Personal Settings
-*   **快捷鍵設定**：
-*   **Keybinding Settings:**
-    *   **主選單開關**：設定開啟華麥助手主介面的按鍵 (預設 `X + F`)。
-    *   **Main Menu Toggle**: Set the key to open the HwamaiHelper main interface (Default: `X + F`).
-    *   **工作方塊介面**：設定開啟工作方塊快速選單的按鍵 (預設 `Shift + G`)。
-    *   **Workstation Interface**: Set the key to open the Workstation quick menu (Default: `Shift + G`).
-*   **煙火自動補充**：
-*   **Auto Firework Replenishment:**
-    *   **開關**：開啟後，當背包內的煙火數量不足時自動補充。
-    *   **Toggle**: When enabled, automatically replenishes fireworks when the inventory count is low.
-    *   **觸發條件**：
-    *   **Trigger Conditions:**
-        1.  煙火數量小於 5 個。
-        1.  Firework count is less than 5.
-        2.  剛好**使用**掉煙火導致數量減少 (右鍵使用)。
-        2.  Just **used** a firework leading to a decrease in count (Right-click use).
-        3.  不在介面中、非丟棄操作。
-        3.  Not in a GUI, and not a drop operation.
-    *   **冷卻時間**：5 秒。
-    *   **Cooldown**: 5 seconds.
+* Mod Version: `1.3.0`
+* Minecraft: `26.2`
+* Fabric Loader: `0.19.3+`
+* Fabric API: `0.152.2+26.2`
+* Java: `25`
 
-### 3. 暱稱編輯器 (Nickname Editor)
-### 3. Nickname Editor
-*   **圖形化編輯**：
-*   **Graphical Editing:**
-    *   支援多段文字編輯，每段可獨立設定顏色與樣式。
-    *   Supports multi-segment text editing, with independent color and style settings for each segment.
-    *   **即時預覽**：上方即時顯示在遊戲中的暱稱效果 (包含自定義陰影)。
-    *   **Real-time Preview**: Displays the in-game nickname effect in real-time at the top (including custom shadows).
-*   **豐富樣式**：
-*   **Rich Styles:**
-    *   **基礎樣式**：粗體 (B)、斜體 (I)、底線 (U)、刪除線 (S)、混淆 (O)。
-    *   **Basic Styles**: Bold (B), Italic (I), Underline (U), Strikethrough (S), Obfuscated (O).
-    *   **特殊效果**：
-    *   **Special Effects:**
-        *   **彩虹 (R)**：整段文字呈現彩虹流光效果。
-        *   **Rainbow (R)**: The entire text segment displays a rainbow flow effect.
-        *   **漸層 (G)**：支援雙色漸層過渡。
-        *   **Gradient (G)**: Supports two-color gradient transitions.
-        *   **陰影 (SH)**：支援自定義陰影顏色 (模組內提供獨家預覽技術)。
-        *   **Shadow (SH)**: Supports custom shadow colors (exclusive preview technology provided within the mod).
-*   **調色盤**：點擊色塊即可開啟 HSV 調色盤，直覺選擇顏色。
-*   **Color Picker**: Click on a color block to open the HSV color picker for intuitive color selection.
-*   **存檔功能**：可將設計好的暱稱存入存檔欄位，方便日後切換。
-*   **Save Feature**: Save designed nicknames to slots for easy switching later.
+## 主要功能 (Features)
 
-### 4. 快速介面 (Quick Interfaces)
-### 4. Quick Interfaces
-*   **遊戲模式切換輪盤 (Game Mode Wheel)**：
-*   **Game Mode Wheel Switcher:**
-    *   **快捷鍵**：`Alt` (可自訂)。
-    *   **Keybinding**: `Alt` (Customizable).
-    *   在遊戲中按住快捷鍵即可開啟輪盤，滑動滑鼠快速切換：**創造**、**觀察者**、**生存**模式。
-    *   Hold the keybinding in-game to open the wheel and move the mouse to quickly switch between **Creative**, **Spectator**, and **Survival** modes.
-    *   針對華麥伺服器最佳化指令使用。
-    *   Optimized command usage specifically for the Hwamai server.
-*   **工作方塊介面 (Workstation Menu)**：
-*   **Workstation Menu:**
-    *   快捷鍵：`Shift + G`
-    *   Keybinding: `Shift + G`
-    *   快速開啟：工作台、切石機、製圖桌、紡織機、鍛造台、砂輪、垃圾桶 (岩漿桶圖示)、終界箱、鐵砧。
-    *   Quickly open: Crafting Table, Stonecutter, Cartography Table, Loom, Smithing Table, Grindstone, Trash Can (Lava Bucket icon), Ender Chest, Anvil.
-    *   點擊對應圖示即可輸入指令開啟遠端介面。
-    *   Click the corresponding icon to execute commands and open the remote interface.
-*   **取得物品介面 (Get Item Menu)**：
-*   **Get Item Menu:**
-    *   快捷鍵：`G`
-    *   Keybinding: `G`
-    *   快速獲取常用物品：煙火、透明展示框、箭矢、頭顱、車 (礦車圖示)、鞘翅、夜魅皮膜、光源。
-    *   Quickly obtain common items: Fireworks, Invisible Item Frames, Arrows, Player Heads, Minecarts, Elytra, Phantom Membranes, Light Blocks.
+### 快捷指令選單 (Quick Command Menu)
 
-### 5. 自定義指令 (Custom Commands)
-### 5. Custom Commands
-*   **靈活配置**：使用者可以在「指令列表」頁面中，點擊「新增」來建立自己的快捷按鍵。
-*   **Flexible Configuration**: Users can create their own shortcut keys by clicking "Add" on the "Command List" page.
-*   **按鍵偵測**：支援單鍵、組合鍵 (如 `Ctrl + Shift + Z`)，並可設定為「按下觸發」或「放開觸發」。
-*   **Key Detection**: Supports single keys and key combinations (e.g., `Ctrl + Shift + Z`), and can be configured as "Trigger on Press" or "Trigger on Release".
+* 預設快捷鍵：`X + F`，可在個人設定中修改。
+* Default keybinding: `X + F`, configurable in Personal Settings.
+* 提供圖形化主介面，集中管理指令列表、個人設定與暱稱設定。
+* Provides a GUI for command lists, personal settings, and nickname settings.
 
-## ⚙️ 安裝與使用 (Installation and Usage)
+### 自定義指令 (Custom Commands)
 
-1.  安裝 **Fabric Loader** (對應 Minecraft 版本 1.21.1)。
-    Install **Fabric Loader** (for Minecraft version 1.21.1).
-2.  安裝 **Fabric API**。
-    Install **Fabric API**.
-3.  將本模組 (`hwamaiHelper-x.x.x.jar`) 放入 `.minecraft/mods` 資料夾。
-    Place this mod (`hwamaiHelper-x.x.x.jar`) into the `.minecraft/mods` folder.
-4.  啟動遊戲，進入伺服器後即可使用。
-    Launch the game and join the server to start using it.
+* 可在「指令列表」新增、修改、刪除自訂指令。
+* Add, edit, and remove custom shortcut commands in the Command List tab.
+* 支援單鍵與組合鍵，例如 `G`、`Ctrl + Y`、`Ctrl + Shift + Z`。
+* Supports single keys and key combinations such as `G`, `Ctrl + Y`, and `Ctrl + Shift + Z`.
+* 每個指令可設定啟用/停用，以及「按下觸發」或「放開觸發」。
+* Each command can be enabled/disabled and configured to trigger on press or release.
+* 指令會自動移除開頭 `/` 後送出，適合快速執行伺服器指令。
+* Commands are sent without a leading `/`, making them suitable for server commands.
 
-## 🛠️ 設定檔 (Configuration)
+### 個人設定 (Personal Settings)
 
-模組的設定檔位於 `.minecraft/config/hwamaihelper.json`。你可以直接編輯此檔案，或透過遊戲內的「個人設定」介面進行調整。
-The mod's configuration file is located at `.minecraft/config/hwamaihelper.json`. You can edit this file directly or adjust settings through the in-game "Personal Settings" interface.
+* 可設定主選單、工作方塊介面、取得物品介面、遊戲模式輪盤、快速整地等快捷鍵。
+* Configure keybindings for the main menu, workstation menu, get-item menu, game mode wheel, and quick land leveling.
+* 支援個別啟用/停用功能，以及按下/放開觸發模式。
+* Supports per-feature enable toggles and press/release trigger modes.
+* 可設定遊戲模式輪盤排除手持物，拿著指定物品時不觸發輪盤。
+* The game mode wheel can ignore activation while holding a configured excluded item.
+* 排除物可用物品選擇器設定，支援中文名、英文名與 ID 搜尋。
+* The excluded item can be selected through an item picker with Chinese, English, and ID search.
 
-主要設定項包括：
-Main configuration items include:
-*   `enabled`: 是否啟用模組。 (Whether the mod is enabled.)
-*   `autoReplenishFireworks`: 是否自動補充煙火。 (Whether to automatically replenish fireworks.)
-*   `openMenuKey`: 主選單快捷鍵 (預設 `X + F`)。 (Main menu keybinding.)
-*   `gameModeWheelKey`: 模式切換輪盤快捷鍵 (預設 `alt`)。 (Game mode wheel keybinding.)
-*   `entries`: 儲存所有自定義快捷指令的清單。 (List of all custom shortcut commands.)
+### 創造模式英文搜尋 (Creative Mode English Search)
 
-## 🏗️ 開發與編譯 (Building)
+* 在非英文語言環境下，也能直接於原版創造模式物品欄搜尋英文物品名稱。
+* Search English item names directly in the vanilla Creative inventory even when the game language is not English.
+* 範例：`redstone`、`diamond sword`、`crafting table`。
+* Examples: `redstone`, `diamond sword`, `crafting table`.
+* 保留原版 ID 搜尋，例如 `minecraft:redstone`。
+* Vanilla ID search such as `minecraft:redstone` remains supported.
+* 可在個人設定中開啟或關閉。
+* Toggleable in Personal Settings.
 
-如果你想自行編譯本專案，請確保已安裝 Java 21。
-If you want to build this project yourself, ensure you have Java 21 installed.
+### 遊戲模式輪盤 (Game Mode Wheel)
+
+* 預設快捷鍵：`Alt`，可自訂。
+* Default keybinding: `Alt`, configurable.
+* 按住快捷鍵顯示輪盤，移動滑鼠選擇模式，放開後執行切換。
+* Hold the key to show the wheel, move the mouse to select a mode, and release to execute.
+* 支援 Creative、Spectator、Survival。
+* Supports Creative, Spectator, and Survival.
+* 在華麥伺服器使用 `gm c`、`gm sp`、`gm s`；其他伺服器使用 vanilla `gamemode` 指令。
+* Uses `gm c`, `gm sp`, and `gm s` on Hwamai; uses vanilla `gamemode` commands elsewhere.
+* 可設定排除手持物，避免與特定物品操作衝突。
+* Supports an excluded held item to avoid conflicts with item actions.
+
+### 工作方塊介面 (Workstation Menu)
+
+* 預設快捷鍵：`Shift + G`，可自訂。
+* Default keybinding: `Shift + G`, configurable.
+* 點擊圖示快速送出華麥伺服器的工作方塊介面指令。
+* Click an icon to send the Hwamai workstation interface command.
+* 目前支援：工作台、切石機、製圖台、織布機、鍛造台、砂輪、垃圾桶、終界箱、鐵砧。
+* Supported entries: Crafting Table, Stonecutter, Cartography Table, Loom, Smithing Table, Grindstone, Trash Can, Ender Chest, and Anvil.
+
+### 取得物品介面 (Get Item Menu)
+
+* 預設快捷鍵：`G`，可自訂。
+* Default keybinding: `G`, configurable.
+* 點擊圖示快速送出華麥伺服器的取得物品指令。
+* Click an icon to send the Hwamai get-item command.
+* 目前支援：煙火、隱形物品展示框、箭矢、玩家頭顱、礦車、鞘翅、幻翼膜、光源方塊。
+* Supported entries: Firework Rockets, Invisible Item Frames, Arrows, Player Heads, Minecarts, Elytra, Phantom Membranes, and Light Blocks.
+
+### 自動補充煙火 (Auto Firework Replenishment)
+
+* 可在個人設定中開啟或關閉。
+* Toggleable in Personal Settings.
+* 當煙火數量低於 5，且剛使用煙火造成數量下降時，自動送出 `chmc 取得物品 煙火`。
+* When firework count drops below 5 after use, it sends `chmc 取得物品 煙火`.
+* 有 5 秒冷卻，避免重複送出指令。
+* Has a 5-second cooldown to avoid command spam.
+* 只在非 GUI 操作且非丟棄物品情境下觸發。
+* Triggers only outside GUI/drop scenarios.
+
+### 快速整地 (Quick Land Leveling)
+
+* 可在個人設定中指定切換快捷鍵；未設定快捷鍵時不觸發。
+* Toggle keybinding can be configured in Personal Settings; it remains inactive until a key is assigned.
+* 開啟後按住原版攻擊/破壞鍵，會自動選取視線附近、可秒挖的方塊進行破壞。
+* While enabled, hold the normal attack/break key to automatically target nearby instant-break blocks.
+* 僅處理玩家目前 Y 座標以上、互動距離內、且視線可達的方塊，降低誤挖風險。
+* Only targets blocks at or above the player's current Y level, within interaction range, and passing line-of-sight checks.
+* 每 tick 目標數可設定為 `1` 到 `10`，用來控制速度與穩定性。
+* Targets per tick can be configured from `1` to `10` to balance speed and stability.
+
+### 暱稱編輯器 (Nickname Editor)
+
+* 支援多段文字編輯，每段可設定文字、顏色與效果。
+* Supports multi-section nickname editing with independent text, color, and effects.
+* 支援即時預覽，包含陰影效果預覽。
+* Supports real-time preview, including shadow preview.
+* 基本樣式：粗體、斜體、底線、刪除線、亂碼。
+* Basic styles: Bold, Italic, Underline, Strikethrough, and Obfuscated.
+* 特殊效果：彩虹、漸層、自訂陰影。
+* Special effects: Rainbow, Gradient, and Custom Shadow.
+* 提供 HSV 調色盤，用於直覺選色。
+* Includes an HSV color picker for visual color selection.
+* 可將暱稱存入存檔欄位，日後可預覽、套用或刪除。
+* Save slots allow previewing, applying, or deleting saved nicknames.
+* 套用暱稱會送出 `chmc 設定 自己 暱稱 ...`；取消暱稱會送出 `chmc 設定 自己 取消暱稱`。
+* Applying sends `chmc 設定 自己 暱稱 ...`; cancelling sends `chmc 設定 自己 取消暱稱`.
+
+### 資源包設定 (Resource Pack Settings)
+
+* README 保留此項目是因為設定檔仍有相關欄位。
+* This entry is kept because related config fields still exist.
+* 目前 26.2 移植版中，資源包自動套用流程屬於保留/實驗狀態，可能不完整啟用。
+* In the 26.2 port, automatic resource-pack application is currently preserved/experimental and may not be fully active.
+
+## 安裝與使用 (Installation)
+
+1. 安裝 Minecraft `26.2` 對應的 Fabric Loader。
+2. 安裝 Fabric API。
+3. 將 `hwamaiHelper-1.3.0.jar` 放入 `.minecraft/mods`。
+4. 啟動遊戲並加入伺服器。
+
+## 設定檔 (Configuration)
+
+設定檔位於 `.minecraft/config/nj_config.json`。
+
+Main configuration fields include:
+
+* `enabled`: 是否啟用模組主功能。
+* `autoReplenishFireworks`: 是否啟用自動補煙火。
+* `enableEnglishSearch`: 是否啟用創造欄英文搜尋。
+* `openMenuKey`: 主選單快捷鍵。
+* `openWorkstationKey`: 工作方塊介面快捷鍵。
+* `openGetItemKey`: 取得物品介面快捷鍵。
+* `gameModeWheelKey`: 遊戲模式輪盤快捷鍵。
+* `gameModeWheelExcludeItem`: 輪盤排除手持物 ID。
+* `quickLandLevelingKey`: 快速整地切換快捷鍵。
+* `quickLandLevelingTargetsPerTick`: 快速整地每 tick 目標數。
+* `entries`: 自訂快捷指令列表。
+
+## 開發與編譯 (Building)
+
+請使用 Java `25`。
 
 ```bash
-# 使用 Gradle 編譯
 ./gradlew build
 ```
 
-編譯完成後的檔案將位於 `build/libs` 資料夾下。
-The built JAR file will be located in the `build/libs` folder.
+編譯完成後，輸出檔會在 `build/libs`。
 
----
-*本模組為華麥伺服器專用輔助工具，請遵守伺服器規範使用。*
-*This mod is an auxiliary tool specifically for the Hwamai server; please follow the server rules while using it.*
+## 注意事項 (Notes)
+
+* 本模組是用戶端輔助工具，部分功能依賴華麥伺服器指令。
+* This is a client-side assistant mod, and some features depend on Hwamai server commands.
+* 使用自動化與快捷功能時，請遵守伺服器規則。
+* Follow server rules when using automation or shortcut features.

@@ -1,12 +1,12 @@
 package org.NJ.hwamaihelper.client.screens;
 
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.text.Text;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ public class GetItemScreen extends Screen {
     private final int windowHeight = 80;
 
     public GetItemScreen() {
-        super(Text.of("取得物品"));
+        super(Component.literal("取得物品"));
     }
 
     @Override
@@ -49,7 +49,7 @@ public class GetItemScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         // Use fill instead of renderBackground to prevent blur shader crash
         context.fill(0, 0, this.width, this.height, 0x80000000);
         
@@ -64,28 +64,28 @@ public class GetItemScreen extends Screen {
         context.fill(guiLeft + windowWidth - 1, guiTop, guiLeft + windowWidth, guiTop + windowHeight, color);
 
         for (ItemButton btn : buttons) {
-            btn.render(context, mouseX, mouseY);
+            btn.extractRenderState(context, mouseX, mouseY);
         }
         
         for (ItemButton btn : buttons) {
              if (btn.isHovered(mouseX, mouseY)) {
-                 context.drawTooltip(textRenderer, Text.of(btn.name), mouseX, mouseY);
+                 context.setTooltipForNextFrame(font, Component.literal(btn.name), mouseX, mouseY);
              }
         }
         
-        super.render(context, mouseX, mouseY, delta);
+        super.extractRenderState(context, mouseX, mouseY, delta);
     }
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubled) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
         double mouseX = click.x();
         double mouseY = click.y();
         
         for (ItemButton btn : buttons) {
             if (btn.isHovered(mouseX, mouseY)) {
-                if (client != null && client.player != null) {
-                    client.player.networkHandler.sendChatCommand("chmc 取得物品 " + btn.name);
-                    this.close();
+                if (this.minecraft != null && this.minecraft.player != null) {
+                    this.minecraft.player.connection.sendCommand("chmc 取得物品 " + btn.name);
+                    this.onClose();
                 }
                 return true;
             }
@@ -94,7 +94,7 @@ public class GetItemScreen extends Screen {
     }
     
     @Override
-    public boolean shouldPause() { return false; }
+    public boolean isPauseScreen() { return false; }
 
     private static class ItemButton {
         int x, y;
@@ -105,11 +105,11 @@ public class GetItemScreen extends Screen {
             this.x = x; this.y = y; this.item = item; this.name = name;
         }
 
-        public void render(DrawContext context, int mx, int my) {
+        public void extractRenderState(GuiGraphicsExtractor context, int mx, int my) {
             if (isHovered(mx, my)) {
                 context.fill(x, y, x + 18, y + 18, 0x55FFFFFF);
             }
-            context.drawItem(new ItemStack(item), x + 1, y + 1);
+            context.item(new ItemStack(item), x + 1, y + 1);
         }
 
         public boolean isHovered(double mx, double my) {

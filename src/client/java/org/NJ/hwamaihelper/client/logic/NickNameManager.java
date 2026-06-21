@@ -1,8 +1,8 @@
 package org.NJ.hwamaihelper.client.logic;
 
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 import org.NJ.hwamaihelper.client.utils.NickSection;
 import org.NJ.hwamaihelper.client.utils.MiniMessageUtils; // 確保有引用
 import java.util.ArrayList;
@@ -29,15 +29,15 @@ public class NickNameManager {
     }
 
     // 修正後：直接調用 Utils 裡面的標準預覽邏輯
-    public MutableText getPreviewText() {
-        MutableText header = Text.literal("預覽: ").formatted(Formatting.GRAY);
-        // append 會把帶樣式的 Text 接在後面
+    public MutableComponent getPreviewComponent() {
+        MutableComponent header = Component.literal("預覽: ").withStyle(ChatFormatting.GRAY);
+        // append 會把帶樣式的 Component 接在後面
         return header.append(MiniMessageUtils.getPreview(sections));
     }
 
     // 修正後：存檔預覽也使用同樣的邏輯
-    public MutableText getPreviewTextFromList(List<NickSection> customSections) {
-        MutableText header = Text.literal("預覽: ").formatted(Formatting.GRAY);
+    public MutableComponent getPreviewComponentFromList(List<NickSection> customSections) {
+        MutableComponent header = Component.literal("預覽: ").withStyle(ChatFormatting.GRAY);
         return header.append(MiniMessageUtils.getPreview(customSections));
     }
 }

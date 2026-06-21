@@ -1,8 +1,8 @@
 package org.NJ.hwamaihelper.client.components;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Click;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import org.NJ.hwamaihelper.client.logic.NickNameManager;
 import org.NJ.hwamaihelper.client.utils.NickSection;
 
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NickEditorPanel {
-    private final MinecraftClient client = MinecraftClient.getInstance();
+    private final Minecraft client = Minecraft.getInstance();
     public final List<NickSectionWidget> sectionWidgets = new ArrayList<>();
 
     public interface ColorPickerCallback {
@@ -43,16 +43,16 @@ public class NickEditorPanel {
     }
 
     // 已移除 width 參數與 renderInstruction 呼叫
-    public void render(DrawContext context, int mouseX, int mouseY, float delta, int height) {
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta, int height) {
         for (NickSectionWidget w : sectionWidgets) {
             // 只有在可見範圍內才渲染
             if (w.textField.getY() > 30 && w.textField.getY() < height) {
-                w.render(context, mouseX, mouseY, delta);
+                w.extractRenderState(context, mouseX, mouseY, delta);
             }
         }
     }
 
-    public boolean mouseClicked(Click click, NickNameManager manager, ColorPickerCallback colorCallback) {
+    public boolean mouseClicked(MouseButtonEvent click, NickNameManager manager, ColorPickerCallback colorCallback) {
         double mx = click.x(), my = click.y();
 
         for (int i = 0; i < sectionWidgets.size(); i++) {
@@ -77,7 +77,7 @@ public class NickEditorPanel {
             if (i < manager.sections.size()) {
                 NickSection s = manager.sections.get(i);
                 NickSectionWidget w = sectionWidgets.get(i);
-                s.text = w.textField.getText();
+                s.text = w.textField.getValue();
                 s.color = w.color;
                 s.color2 = w.color2;
                 s.shadowColor = w.shadowColor;

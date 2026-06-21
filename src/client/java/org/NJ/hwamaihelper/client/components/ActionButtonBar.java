@@ -1,16 +1,16 @@
 package org.NJ.hwamaihelper.client.components;
 
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
 
 public class ActionButtonBar {
-    private ButtonWidget addSectionBtn;
-    private ButtonWidget applyNickBtn;
-    private ButtonWidget cancelNickBtn;
-    private ButtonWidget saveCurrentBtn;
+    private Button addSectionBtn;
+    private Button applyNickBtn;
+    private Button cancelNickBtn;
+    private Button saveCurrentBtn;
 
     // 定義回呼接口，讓主畫面決定點擊後要做什麼
     public interface ActionCallbacks {
@@ -22,30 +22,30 @@ public class ActionButtonBar {
 
     public void init(int centerX, int y, ActionCallbacks callbacks) {
         // [+] 按鈕
-        this.addSectionBtn = ButtonWidget.builder(Text.of("§a+"), b -> callbacks.onAdd())
-                .dimensions(centerX + 87 , y, 20, 20).build();
+        this.addSectionBtn = Button.builder(Component.literal("§a+"), b -> callbacks.onAdd())
+                .bounds(centerX + 87 , y, 20, 20).build();
 
         // 套用暱稱
-        this.applyNickBtn = ButtonWidget.builder(Text.of("§w套用暱稱"), b -> callbacks.onApply())
-                .dimensions(centerX - 82, y, 55, 20).build();
+        this.applyNickBtn = Button.builder(Component.literal("§w套用暱稱"), b -> callbacks.onApply())
+                .bounds(centerX - 82, y, 55, 20).build();
 
         // 取消暱稱
-        this.cancelNickBtn = ButtonWidget.builder(Text.of("§w取消暱稱"), b -> callbacks.onCancel())
-                .dimensions(centerX - 22, y, 55, 20).build();
+        this.cancelNickBtn = Button.builder(Component.literal("§w取消暱稱"), b -> callbacks.onCancel())
+                .bounds(centerX - 22, y, 55, 20).build();
 
         // 儲存暱稱
-        this.saveCurrentBtn = ButtonWidget.builder(Text.of("§w儲存暱稱"), b -> callbacks.onSave())
-                .dimensions(centerX + 37, y, 45, 20).build();
+        this.saveCurrentBtn = Button.builder(Component.literal("§w儲存暱稱"), b -> callbacks.onSave())
+                .bounds(centerX + 37, y, 45, 20).build();
     }
 
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        addSectionBtn.render(context, mouseX, mouseY, delta);
-        applyNickBtn.render(context, mouseX, mouseY, delta);
-        cancelNickBtn.render(context, mouseX, mouseY, delta);
-        saveCurrentBtn.render(context, mouseX, mouseY, delta);
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        addSectionBtn.extractRenderState(context, mouseX, mouseY, delta);
+        applyNickBtn.extractRenderState(context, mouseX, mouseY, delta);
+        cancelNickBtn.extractRenderState(context, mouseX, mouseY, delta);
+        saveCurrentBtn.extractRenderState(context, mouseX, mouseY, delta);
     }
 
-    public boolean mouseClicked(Click click, boolean d) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean d) {
         return addSectionBtn.mouseClicked(click, d) ||
                 applyNickBtn.mouseClicked(click, d) ||
                 cancelNickBtn.mouseClicked(click, d) ||

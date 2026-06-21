@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 public class KeyRecorder {
 
     // 將當前按下的多個 KeyCode 集合轉換為 "ctrl+shift+a" 格式
-    public static String convertToText(Set<Integer> pressedKeys) {
+    public static String convertToComponent(Set<Integer> pressedKeys) {
         if (pressedKeys.isEmpty()) return "";
         return pressedKeys.stream()
                 .map(KeyRecorder::getKeyName)
@@ -15,6 +15,15 @@ public class KeyRecorder {
     }
 
     private static String getKeyName(int keyCode) {
+        if (keyCode == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            return "mouse_left";
+        }
+        if (keyCode == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+            return "mouse_right";
+        }
+        if (keyCode == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
+            return "mouse_middle";
+        }
         return switch (keyCode) {
             case GLFW.GLFW_KEY_LEFT_CONTROL -> "left_ctrl";
             case GLFW.GLFW_KEY_RIGHT_CONTROL -> "right_ctrl";
@@ -52,10 +61,10 @@ public class KeyRecorder {
             case GLFW.GLFW_KEY_KP_DIVIDE -> "numpad_divide";
             case GLFW.GLFW_KEY_KP_DECIMAL -> "numpad_decimal";
             case GLFW.GLFW_KEY_KP_EQUAL -> "numpad_equal";
-            case GLFW.GLFW_MOUSE_BUTTON_LEFT -> "mouse_left";
-            case GLFW.GLFW_MOUSE_BUTTON_RIGHT -> "mouse_right";
-            case GLFW.GLFW_MOUSE_BUTTON_MIDDLE -> "mouse_middle";
             default -> {
+                if (keyCode <= GLFW.GLFW_KEY_UNKNOWN) {
+                    yield "key_" + keyCode;
+                }
                 String name = GLFW.glfwGetKeyName(keyCode, 0);
                 yield (name != null) ? name : "key_" + keyCode;
             }

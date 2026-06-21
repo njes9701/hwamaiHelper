@@ -10,8 +10,11 @@ public class HwamaihelperClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        org.NJ.hwamaihelper.client.logic.ResourcePackHandler.init();
+        ClientTickEvents.END_CLIENT_TICK.register(org.NJ.hwamaihelper.client.logic.ResourcePackHandler::tick);
         ClientTickEvents.END_CLIENT_TICK.register(KeyBindingHandler::onClientTick);
         ClientTickEvents.END_CLIENT_TICK.register(org.NJ.hwamaihelper.client.logic.InventoryHandler::onClientTick);
+        ClientTickEvents.END_CLIENT_TICK.register(org.NJ.hwamaihelper.client.logic.QuickLandLevelingHandler::onClientTick);
         ClientPlayConnectionEvents.JOIN.register(ConnectionHandler::onJoin);
     }
 }
