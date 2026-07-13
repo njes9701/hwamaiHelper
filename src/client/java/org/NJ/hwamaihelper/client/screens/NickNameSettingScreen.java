@@ -51,7 +51,7 @@ public class NickNameSettingScreen extends GuiBase {
         addButton(new ButtonGeneric(10, 8, 90, 20, "返回設定"),
                 (button, mouseButton) -> closeGui(true));
         addButton(new ButtonGeneric(10, 32, 90, 20, "自訂指令"),
-                (button, mouseButton) -> GuiBase.openGui(new CommandListScreen().setParent(this)));
+                (button, mouseButton) -> GuiBase.openGui(new CommandListScreen().setParent(getParent())));
 
         refreshWidgets();
     }

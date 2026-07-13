@@ -49,7 +49,7 @@ public class CommandListScreen extends GuiBase {
         addButton(new ButtonGeneric(10, 28, 90, 20, "返回設定"),
                 (button, mouseButton) -> closeGui(true));
         addButton(new ButtonGeneric(10, 52, 90, 20, "暱稱編輯器"),
-                (button, mouseButton) -> GuiBase.openGui(new NickNameSettingScreen().setParent(this)));
+                (button, mouseButton) -> GuiBase.openGui(new NickNameSettingScreen().setParent(getParent())));
     }
 
     @Override

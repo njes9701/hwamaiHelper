@@ -6,11 +6,16 @@ HwamaiHelper is a Fabric client-side assistant mod designed for the Hwamai serve
 
 ## 版本資訊 (Version)
 
-* Mod Version: `1.3.0`
+* Mod Version: `1.4.0`
 * Minecraft: `26.2`
 * Fabric Loader: `0.19.3+`
-* Fabric API: `0.152.2+26.2`
+* Fabric API: `0.154.0+26.2`
+* MaLiLib: `0.29.2+`（必要依賴 / Required）
 * Java: `25`
+
+> **必要依賴：** 本模組目前使用 MaLiLib 提供設定介面與快捷鍵功能。安裝 HwamaiHelper 前，必須先安裝 Minecraft `26.2` 對應的 MaLiLib `0.29.2` 或更新版本，否則 Fabric Loader 將無法啟動本模組。
+>
+> **Required dependency:** HwamaiHelper uses MaLiLib for its configuration GUI and keybind system. Install MaLiLib `0.29.2` or newer for Minecraft `26.2` before launching the mod.
 
 ## 主要功能 (Features)
 
@@ -124,19 +129,13 @@ HwamaiHelper is a Fabric client-side assistant mod designed for the Hwamai serve
 * 套用暱稱會送出 `chmc 設定 自己 暱稱 ...`；取消暱稱會送出 `chmc 設定 自己 取消暱稱`。
 * Applying sends `chmc 設定 自己 暱稱 ...`; cancelling sends `chmc 設定 自己 取消暱稱`.
 
-### 資源包設定 (Resource Pack Settings)
-
-* README 保留此項目是因為設定檔仍有相關欄位。
-* This entry is kept because related config fields still exist.
-* 目前 26.2 移植版中，資源包自動套用流程屬於保留/實驗狀態，可能不完整啟用。
-* In the 26.2 port, automatic resource-pack application is currently preserved/experimental and may not be fully active.
-
 ## 安裝與使用 (Installation)
 
 1. 安裝 Minecraft `26.2` 對應的 Fabric Loader。
-2. 安裝 Fabric API。
-3. 將 `hwamaiHelper-1.3.0.jar` 放入 `.minecraft/mods`。
-4. 啟動遊戲並加入伺服器。
+2. 安裝 Fabric API `0.154.0+26.2`。
+3. 安裝 MaLiLib `0.29.2+`；此為必要依賴，不能省略。
+4. 將 `hwamaiHelper-1.4.0.jar`、Fabric API 與 MaLiLib 放入 `.minecraft/mods`。
+5. 啟動遊戲並加入伺服器。
 
 ## 設定檔 (Configuration)
 

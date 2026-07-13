@@ -39,7 +39,6 @@ public final class HwamaiMalilibConfig implements IConfigHandler {
     public static final ConfigBoolean ENABLED = bool("enabled", true, "啟用華麥助手", "控制整個模組是否處理快捷鍵與自動化功能。");
     public static final ConfigBoolean AUTO_REPLENISH_FIREWORKS = bool("autoReplenishFireworks", false, "自動補充煙火", "煙火不足時自動執行補充指令。");
     public static final ConfigBoolean ENABLE_ENGLISH_SEARCH = bool("enableEnglishSearch", true, "啟用英文物品搜尋", "物品選擇器同時搜尋英文名稱。");
-    public static final ConfigBoolean RESOURCE_PACK_ALWAYS_APPLY = bool("resourcePackAlwaysApply", false, "總是套用伺服器材質包", "保留原有材質包自動套用設定。");
     public static final ConfigBoolean OPEN_MENU_ENABLED = bool("openMenuEnabled", true, "啟用主選單快捷鍵", "允許以快捷鍵開啟華麥助手。");
     public static final ConfigBoolean OPEN_WORKSTATION_ENABLED = bool("openWorkstationEnabled", true, "啟用工作站快捷鍵", "允許以快捷鍵開啟工作站選單。");
     public static final ConfigBoolean OPEN_GET_ITEM_ENABLED = bool("openGetItemEnabled", true, "啟用取得物品快捷鍵", "允許以快捷鍵開啟取得物品選單。");
@@ -64,7 +63,6 @@ public final class HwamaiMalilibConfig implements IConfigHandler {
             ENABLED,
             AUTO_REPLENISH_FIREWORKS,
             ENABLE_ENGLISH_SEARCH,
-            RESOURCE_PACK_ALWAYS_APPLY,
             OPEN_MENU_ENABLED,
             OPEN_WORKSTATION_ENABLED,
             OPEN_GET_ITEM_ENABLED,
@@ -153,7 +151,6 @@ public final class HwamaiMalilibConfig implements IConfigHandler {
         ENABLED.setBooleanValue(config.enabled);
         AUTO_REPLENISH_FIREWORKS.setBooleanValue(config.autoReplenishFireworks);
         ENABLE_ENGLISH_SEARCH.setBooleanValue(config.enableEnglishSearch);
-        RESOURCE_PACK_ALWAYS_APPLY.setBooleanValue(config.resourcePackAlwaysApply);
         OPEN_MENU_ENABLED.setBooleanValue(config.openMenuEnabled);
         OPEN_WORKSTATION_ENABLED.setBooleanValue(config.openWorkstationEnabled);
         OPEN_GET_ITEM_ENABLED.setBooleanValue(config.openGetItemEnabled);
@@ -186,7 +183,6 @@ public final class HwamaiMalilibConfig implements IConfigHandler {
         config.enabled = ENABLED.getBooleanValue();
         config.autoReplenishFireworks = AUTO_REPLENISH_FIREWORKS.getBooleanValue();
         config.enableEnglishSearch = ENABLE_ENGLISH_SEARCH.getBooleanValue();
-        config.resourcePackAlwaysApply = RESOURCE_PACK_ALWAYS_APPLY.getBooleanValue();
         config.openMenuEnabled = OPEN_MENU_ENABLED.getBooleanValue();
         config.openWorkstationEnabled = OPEN_WORKSTATION_ENABLED.getBooleanValue();
         config.openGetItemEnabled = OPEN_GET_ITEM_ENABLED.getBooleanValue();
