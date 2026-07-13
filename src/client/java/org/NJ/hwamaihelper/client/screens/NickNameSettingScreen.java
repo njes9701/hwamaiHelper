@@ -1,11 +1,19 @@
 package org.NJ.hwamaihelper.client.screens;
 
+import fi.dy.masa.malilib.config.options.ConfigColor;
+import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.gui.GuiColorEditorHSV;
+import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
-import org.NJ.hwamaihelper.client.components.*;
+import net.minecraft.client.input.MouseButtonEvent;
+import org.NJ.hwamaihelper.client.components.ActionButtonBar;
+import org.NJ.hwamaihelper.client.components.NickEditorPanel;
+import org.NJ.hwamaihelper.client.components.NickPreviewHeader;
+import org.NJ.hwamaihelper.client.components.NickSectionWidget;
+import org.NJ.hwamaihelper.client.components.SaveSlotPanel;
 import org.NJ.hwamaihelper.client.logic.NickNameManager;
 import org.NJ.hwamaihelper.client.utils.NickSection;
 import org.NJ.hwamaihelper.config.NJConfig;
@@ -13,9 +21,11 @@ import org.NJ.hwamaihelper.config.NJConfigManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
-public class NickNameSettingScreen implements NJTab {
+/** Nickname editor hosted by MaLiLib, including MaLiLib's HSV color dialog. */
+public class NickNameSettingScreen extends GuiBase {
     private final Minecraft client = Minecraft.getInstance();
     private final NickNameManager manager = new NickNameManager();
 
@@ -24,19 +34,25 @@ public class NickNameSettingScreen implements NJTab {
     private final ActionButtonBar actions = new ActionButtonBar();
     private final SaveSlotPanel saveSlots = new SaveSlotPanel();
 
-    private ColorPickerComponent picker;
-    private int width, height;
-    private double scrollAmount = 0;
-    private boolean showPicker = false;
+    private double scrollAmount;
 
-    private int activeColorTarget = 1;
+    public NickNameSettingScreen() {
+        setTitle("暱稱編輯器");
+    }
 
     @Override
-    public void init(int width, int height) {
-        this.width = width;
-        this.height = height;
-        this.picker = new ColorPickerComponent(0, 0, 70);
-        if (manager.sections.isEmpty()) loadDefaultFromConfig();
+    public void initGui() {
+        super.initGui();
+
+        if (manager.sections.isEmpty()) {
+            loadDefaultFromConfig();
+        }
+
+        addButton(new ButtonGeneric(10, 8, 90, 20, "返回設定"),
+                (button, mouseButton) -> closeGui(true));
+        addButton(new ButtonGeneric(10, 32, 90, 20, "自訂指令"),
+                (button, mouseButton) -> GuiBase.openGui(new CommandListScreen().setParent(this)));
+
         refreshWidgets();
     }
 
@@ -52,18 +68,12 @@ public class NickNameSettingScreen implements NJTab {
 
     private void refreshWidgets() {
         int centerX = (width / 2) + 15;
-        int btnY = (int) (60 + (manager.sections.size() * 24) - scrollAmount);
+        int buttonY = (int) (60 + (manager.sections.size() * 24) - scrollAmount);
 
-        editor.refresh(manager, centerX, scrollAmount, this::refreshWidgets, (index, x, y) -> {
-            manager.activeColorIndex = index;
-            showPicker = true;
-            picker.x = x + 30;
-            picker.y = y - 10;
-        });
+        editor.refresh(manager, centerX, scrollAmount, this::refreshWidgets,
+                (index, x, y) -> openColorEditor(index, 1));
 
-        int totalAlignX = centerX - 22;
-
-        actions.init(totalAlignX, btnY, new ActionButtonBar.ActionCallbacks() {
+        actions.init(centerX - 22, buttonY, new ActionButtonBar.ActionCallbacks() {
             @Override
             public void onAdd() {
                 editor.syncToManager(manager);
@@ -74,12 +84,16 @@ public class NickNameSettingScreen implements NJTab {
             @Override
             public void onApply() {
                 editor.syncToManager(manager);
-                client.player.connection.sendCommand("chmc 設定 自己 暱稱 " + manager.buildCommand());
+                if (client.player != null) {
+                    client.player.connection.sendCommand("chmc 設定 自己 暱稱 " + manager.buildCommand());
+                }
             }
 
             @Override
             public void onCancel() {
-                client.player.connection.sendCommand("chmc 設定 自己 取消暱稱");
+                if (client.player != null) {
+                    client.player.connection.sendCommand("chmc 設定 自己 取消暱稱");
+                }
             }
 
             @Override
@@ -104,179 +118,146 @@ public class NickNameSettingScreen implements NJTab {
         });
     }
 
+    private void openColorEditor(int sectionIndex, int colorTarget) {
+        editor.syncToManager(manager);
+        if (sectionIndex < 0 || sectionIndex >= manager.sections.size()) {
+            return;
+        }
+
+        manager.activeColorIndex = sectionIndex;
+        NickSection section = manager.sections.get(sectionIndex);
+        String currentColor = colorTarget == 2
+                ? (section.has("shadow") ? section.shadowColor : section.color2)
+                : section.color;
+
+        ConfigColor color = new ConfigColor("nicknameColor", toMalilibColor(currentColor),
+                "編輯這一段暱稱的顏色", "暱稱顏色");
+        color.setValueChangeCallback(config -> {
+            String rgb = toNicknameColor(config.getStringValue());
+            NickSectionWidget widget = sectionIndex < editor.sectionWidgets.size()
+                    ? editor.sectionWidgets.get(sectionIndex)
+                    : null;
+
+            if (colorTarget == 2) {
+                if (section.has("shadow")) {
+                    section.shadowColor = rgb;
+                    if (widget != null) widget.shadowColor = rgb;
+                } else {
+                    section.color2 = rgb;
+                    if (widget != null) widget.color2 = rgb;
+                }
+            } else {
+                section.color = rgb;
+                if (widget != null) widget.color = rgb;
+            }
+            save();
+        });
+
+        GuiBase.openGui(new GuiColorEditorHSV(color, null, this));
+    }
+
+    private static String toMalilibColor(String value) {
+        String rgb = toNicknameColor(value).substring(1);
+        return "#FF" + rgb;
+    }
+
+    private static String toNicknameColor(String value) {
+        String clean = value == null ? "" : value.replace("#", "").trim();
+        if (clean.length() >= 8) {
+            clean = clean.substring(clean.length() - 6);
+        }
+        if (clean.length() != 6) {
+            clean = "FFFFFF";
+        }
+        return "#" + clean.toUpperCase(Locale.ROOT);
+    }
+
     @Override
     public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(context, mouseX, mouseY, delta);
         editor.syncToManager(manager);
         int centerX = (width / 2) + 15;
 
         header.extractRenderState(context, width, manager, saveSlots.getHoveredSections());
 
-        context.enableScissor(0, 55, width, height); // 放寬剪裁範圍確保渲染
-        editor.extractRenderState(context, mouseX, mouseY, delta, this.height);
+        context.enableScissor(0, 55, width, height);
+        editor.extractRenderState(context, mouseX, mouseY, delta, height);
         actions.extractRenderState(context, mouseX, mouseY, delta);
-        saveSlots.extractRenderState(context, mouseX, mouseY, delta, Math.max(centerX + 120, width - 85), width, height);
+        saveSlots.extractRenderState(context, mouseX, mouseY, delta,
+                Math.max(centerX + 120, width - 85), width, height);
         context.disableScissor();
-
-        if (showPicker && manager.activeColorIndex < manager.sections.size()) {
-            NickSection s = manager.sections.get(manager.activeColorIndex);
-            String displayHex = (activeColorTarget == 2) ?
-                    (s.has("shadow") ? s.shadowColor : s.color2) : s.color;
-            picker.extractRenderState(context, displayHex);
-        }
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent click, boolean d) {
-        double mx = click.x();
-        double my = click.y();
-
-        if (showPicker && (picker.isMouseButtonEventInHue(mx, my) || picker.isMouseButtonEventInBox(mx, my))) {
-            updateColor(mx, my);
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
+        if (super.mouseClicked(click, doubled)) {
             return true;
         }
 
-        // 點擊 UI 其他部分時的焦點處理
-        boolean handled = false;
+        double mouseX = click.x();
+        double mouseY = click.y();
+
         for (int i = 0; i < editor.sectionWidgets.size(); i++) {
-            NickSectionWidget w = editor.sectionWidgets.get(i);
-            NickSection s = manager.sections.get(i);
+            NickSectionWidget widget = editor.sectionWidgets.get(i);
+            NickSection section = manager.sections.get(i);
 
-            // 1. 檢查 Widget 內部點擊 (輸入框與按鈕)
-            if (w.mouseClicked(click, d)) {
-                // 如果點的是這一段，其他段落取消焦點
+            if (widget.mouseClicked(click, doubled)) {
                 for (NickSectionWidget other : editor.sectionWidgets) {
-                    if (other != w) other.textField.setFocused(false);
+                    if (other != widget) other.textField.setFocused(false);
                 }
-                handled = true;
-                break;
+                return true;
             }
 
-            // 2. 檢查色塊點擊 (調色盤觸發)
-            int rectX = w.textField.getX() - 22;
-            int rectY = w.textField.getY();
-            if (my >= rectY && my <= rectY + 20 && mx >= rectX && mx <= rectX + 20) {
-                manager.activeColorIndex = i;
-                showPicker = true;
-                picker.x = (int) mx + 10;
-                picker.y = (int) my - 10;
-
-                // 判斷點左邊還是右邊
-                if ((s.has("gradient") || s.has("shadow")) && mx >= rectX + 10) {
-                    activeColorTarget = 2;
-                } else {
-                    activeColorTarget = 1;
+            int rectX = widget.textField.getX() - 22;
+            int rectY = widget.textField.getY();
+            if (mouseY >= rectY && mouseY <= rectY + 20
+                    && mouseX >= rectX && mouseX <= rectX + 20) {
+                int colorTarget = (section.has("gradient") || section.has("shadow"))
+                        && mouseX >= rectX + 10 ? 2 : 1;
+                for (NickSectionWidget other : editor.sectionWidgets) {
+                    other.textField.setFocused(false);
                 }
-
-                // 取消所有輸入框焦點
-                for (NickSectionWidget all : editor.sectionWidgets) all.textField.setFocused(false);
+                openColorEditor(i, colorTarget);
                 return true;
             }
         }
 
-        if (handled) {
-            showPicker = false;
+        return saveSlots.mouseClicked(click, doubled) || actions.mouseClicked(click, doubled);
+    }
+
+    @Override
+    public boolean charTyped(CharacterEvent input) {
+        for (NickSectionWidget widget : editor.sectionWidgets) {
+            if (widget.textField.isFocused()) {
+                return widget.textField.charTyped(input);
+            }
+        }
+        return super.charTyped(input);
+    }
+
+    @Override
+    public boolean keyPressed(KeyEvent input) {
+        if (input.key() == 256) {
+            save();
+            closeGui(true);
             return true;
         }
 
-        if (saveSlots.mouseClicked(click, d) || actions.mouseClicked(click, d)) {
-            showPicker = false;
-            return true;
-        }
-
-        showPicker = false;
-        return false;
-    }
-
-    /**
-     * 修正：鍵盤輸入轉發
-     * 必須從 CharacterEvent 提取原始 char 與 modifiers
-     */
-    @Override
-    public boolean charTyped(CharacterEvent i) {
-        for (NickSectionWidget w : editor.sectionWidgets) {
-            if (w.textField.isFocused()) {
-                // 直接傳入 CharacterEvent 物件，讓 EditBox 自己處理
-                return w.textField.charTyped(i);
+        for (NickSectionWidget widget : editor.sectionWidgets) {
+            if (widget.textField.isFocused()) {
+                return widget.textField.keyPressed(input);
             }
         }
-        return false;
-    }
-
-    /**
-     * 修正：按鍵轉發
-     * 同樣需要從 KeyEvent 提取原始資料
-     */
-    @Override
-    public boolean keyPressed(KeyEvent i) {
-        // 處理 ESC 鍵關閉視窗 (256 是 GLFW_KEY_ESCAPE)
-        if (i.key() == 256) {
-            if (showPicker) {
-                showPicker = false;
-                return true;
-            }
-            this.save();
-            client.setScreenAndShow(null);
-            return true;
-        }
-
-        for (NickSectionWidget w : editor.sectionWidgets) {
-            if (w.textField.isFocused()) {
-                // 修正點：直接傳入整個 KeyEvent 物件 i
-                return w.textField.keyPressed(i);
-            }
-        }
-        return false;
+        return super.keyPressed(input);
     }
 
     @Override
-    public boolean keyReleased(KeyEvent i) {
-        return false;
-    }
-
-    private void updateColor(double mx, double my) {
-        if (manager.activeColorIndex >= manager.sections.size()) return;
-
-        NickSection s = manager.sections.get(manager.activeColorIndex);
-        NickSectionWidget widget = editor.sectionWidgets.get(manager.activeColorIndex);
-
-        String curHex = (activeColorTarget == 2) ?
-                (s.has("shadow") ? s.shadowColor : s.color2) : s.color;
-
-        if (curHex == null) curHex = "#FFFFFF";
-
-        String hex = picker.pickColor(mx, my, curHex);
-
-        if (activeColorTarget == 2) {
-            if (s.has("shadow")) {
-                s.shadowColor = hex;
-                widget.shadowColor = hex;
-            } else {
-                s.color2 = hex;
-                widget.color2 = hex;
-            }
-        } else {
-            s.color = hex;
-            widget.color = hex;
-        }
-    }
-
-    @Override
-    public boolean mouseScrolled(double x, double y, double h, double v) {
-        this.scrollAmount = Math.max(0, this.scrollAmount - (v * 15));
+    public boolean mouseScrolled(double x, double y, double horizontalAmount, double verticalAmount) {
+        scrollAmount = Math.max(0, scrollAmount - (verticalAmount * 15));
         refreshWidgets();
         return true;
     }
 
-    @Override
-    public boolean mouseDragged(MouseButtonEvent click, double x, double y) {
-        if (showPicker && (picker.isMouseButtonEventInHue(click.x(), click.y()) || picker.isMouseButtonEventInBox(click.x(), click.y()))) {
-            updateColor(click.x(), click.y());
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     public void save() {
         editor.syncToManager(manager);
         NJConfig config = NJConfigManager.getInstance();
@@ -284,6 +265,12 @@ public class NickNameSettingScreen implements NJTab {
             config.nickSections = new ArrayList<>(manager.sections);
             NJConfigManager.save();
         }
+    }
+
+    @Override
+    public void removed() {
+        save();
+        super.removed();
     }
 
     private List<NickSection> deepCopySections(List<NickSection> original) {
@@ -295,7 +282,7 @@ public class NickNameSettingScreen implements NJTab {
         NJConfig config = NJConfigManager.getInstance();
         if (config != null) {
             if (config.savedNicknames == null) config.savedNicknames = new ArrayList<>();
-            config.savedNicknames.add(new NJConfig.NickGroup("存檔", deepCopySections(manager.sections)));
+            config.savedNicknames.add(new NJConfig.NickGroup("新儲存", deepCopySections(manager.sections)));
             NJConfigManager.save();
         }
     }

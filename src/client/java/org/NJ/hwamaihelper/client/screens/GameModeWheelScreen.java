@@ -1,21 +1,18 @@
 package org.NJ.hwamaihelper.client.screens;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.multiplayer.ServerData;
+import fi.dy.masa.malilib.gui.GuiBase;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.network.chat.Component;
-import org.NJ.hwamaihelper.client.utils.InputUtils;
-import org.NJ.hwamaihelper.config.NJConfigManager;
+import org.NJ.hwamaihelper.config.HwamaiMalilibConfig;
 
-public class GameModeWheelScreen extends Screen {
+public class GameModeWheelScreen extends GuiBase {
 
     private int selectedIndex = -1; // 0: Creative, 1: Spectator, 2: Survival
 
     public GameModeWheelScreen() {
-        super(Component.literal("Game Mode Wheel"));
+        setTitle("Game Mode Wheel");
     }
 
     @Override
@@ -25,6 +22,7 @@ public class GameModeWheelScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(context, mouseX, mouseY, delta);
         int centerX = this.width / 2;
         int centerY = this.height / 2;
         int radius = 65;
@@ -78,7 +76,6 @@ public class GameModeWheelScreen extends Screen {
         int survY = centerY + (int)(iconDist * Math.sin(Math.toRadians(150)));
         drawMode(context, survX, survY, new ItemStack(Items.DIAMOND_SWORD), "生存", selectedIndex == 2);
 
-        super.extractRenderState(context, mouseX, mouseY, delta);
     }
 
     private void drawCircle(GuiGraphicsExtractor context, int cx, int cy, int r, int color) {
@@ -130,9 +127,7 @@ public class GameModeWheelScreen extends Screen {
     @Override
     public void tick() {
         super.tick();
-        String key = NJConfigManager.getInstance().gameModeWheelKey;
-        if (key == null || key.isEmpty()) key = "alt";
-        if (!InputUtils.isBindingPressed(this.minecraft, key)) {
+        if (!HwamaiMalilibConfig.GAME_MODE_WHEEL.getKeybind().isKeybindHeld()) {
             executeSelection();
             this.onClose();
         }

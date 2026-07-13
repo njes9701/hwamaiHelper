@@ -28,11 +28,20 @@ fabricApi {
 }
 
 repositories {
-    // Add repositories to retrieve artifacts from in here.
-    // You should only use this when depending on other mods because
-    // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-    // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-    // for more information about repositories.
+    maven {
+        name = "MasaMods"
+        url = "https://masa.dy.fi/maven/sakura-ryoko"
+        content {
+            includeGroupAndSubgroups("fi.dy.masa")
+        }
+    }
+    maven {
+        name = "FallenBreath"
+        url = "https://maven.fallenbreath.me/releases"
+        content {
+            includeGroupAndSubgroups("me.fallenbreath")
+        }
+    }
 }
 
 dependencies {
@@ -41,6 +50,7 @@ dependencies {
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    implementation "fi.dy.masa.malilib:malilib-fabric-${project.minecraft_version}:${project.malilib_version}"
 }
 
 processResources {

@@ -3,12 +3,14 @@ package org.NJ.hwamaihelper.client.screens;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.network.chat.Component;
+import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import org.NJ.hwamaihelper.client.components.ConfigRow;
+import org.NJ.hwamaihelper.client.logic.MalilibInputHandler;
 import org.NJ.hwamaihelper.client.utils.KeyRecorder;
 import org.NJ.hwamaihelper.config.NJConfig;
 import org.NJ.hwamaihelper.config.NJConfigManager;
@@ -16,36 +18,38 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 
-public class CommandListScreen implements NJTab {
+public class CommandListScreen extends GuiBase {
     private CommandListWidget listWidget;
-    private Button addButton;
     private final Minecraft client;
-    private int width, height;
 
     private ConfigRow activeRow = null;
     private final Set<Integer> pressedKeys = new HashSet<>();
 
     public CommandListScreen() {
         this.client = Minecraft.getInstance();
+        setTitle("自訂指令");
     }
 
     @Override
-    public void init(int width, int height) {
-        this.width = width;
-        this.height = height;
+    public void initGui() {
+        super.initGui();
 
         // 初始化滾動列表區域
-        this.listWidget = new CommandListWidget(client, width - 120, height - 90, 40, 24);
+        this.listWidget = new CommandListWidget(client, this.width - 120, this.height - 90, 40, 24);
         this.listWidget.setX(110);
 
         for (NJConfig.Entry e : NJConfigManager.getInstance().entries) {
             this.listWidget.addEntry(new CommandEntry(e.command, e.key, e.onRelease, e.enabled));
         }
 
-        this.addButton = Button.builder(Component.literal("§a+ 增加指令"), b -> {
+        addButton(new ButtonGeneric((this.width + 100) / 2 - 75, this.height - 35, 150, 20, "§a+ 增加指令"), (button, mouseButton) -> {
             CommandEntry newEntry = new CommandEntry("", "", true, true);
             this.listWidget.addEntry(newEntry);
-        }).bounds((width + 100) / 2 - 75, height - 35, 150, 20).build();
+        });
+        addButton(new ButtonGeneric(10, 28, 90, 20, "返回設定"),
+                (button, mouseButton) -> closeGui(true));
+        addButton(new ButtonGeneric(10, 52, 90, 20, "暱稱編輯器"),
+                (button, mouseButton) -> GuiBase.openGui(new NickNameSettingScreen().setParent(this)));
     }
 
     @Override
@@ -57,14 +61,12 @@ public class CommandListScreen implements NJTab {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(context, mouseX, mouseY, delta);
         this.listWidget.extractRenderState(context, mouseX, mouseY, delta);
-        this.addButton.extractRenderState(context, mouseX, mouseY, delta);
     }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
-        if (addButton.mouseClicked(click, doubled)) return true;
-
         for (CommandEntry entry : listWidget.children()) {
             // 檢查是否點擊了按鍵綁定欄位
             if (entry.row.keyField.isMouseOver(click.x(), click.y())) {
@@ -100,7 +102,7 @@ public class CommandListScreen implements NJTab {
             activeRow = null;
         }
 
-        return listWidget.mouseClicked(click, doubled);
+        return listWidget.mouseClicked(click, doubled) || super.mouseClicked(click, doubled);
     }
 
     @Override
@@ -113,7 +115,7 @@ public class CommandListScreen implements NJTab {
         if (activeRow != null) return true;
 
         // 現在參數類型一致了：都是 CharacterEvent
-        return listWidget.charTyped(input);
+        return listWidget.charTyped(input) || super.charTyped(input);
     }
 
     @Override
@@ -129,7 +131,7 @@ public class CommandListScreen implements NJTab {
             activeRow.keyField.setValue(KeyRecorder.convertToComponent(pressedKeys));
             return true;
         }
-        return listWidget.keyPressed(input);
+        return listWidget.keyPressed(input) || super.keyPressed(input);
     }
 
     @Override
@@ -138,7 +140,6 @@ public class CommandListScreen implements NJTab {
         return listWidget.keyReleased(input);
     }
 
-    @Override
     public void save() {
         NJConfig config = NJConfigManager.getInstance();
         config.entries.clear();
@@ -149,6 +150,15 @@ public class CommandListScreen implements NJTab {
             }
         }
         NJConfigManager.save();
+        MalilibInputHandler.getInstance().refreshCustomCommandHotkeys();
+    }
+
+    @Override
+    public void removed() {
+        if (this.listWidget != null) {
+            save();
+        }
+        super.removed();
     }
 
     private class CommandListWidget extends ContainerObjectSelectionList<CommandEntry> {

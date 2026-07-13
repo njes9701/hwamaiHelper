@@ -3,6 +3,7 @@ package org.NJ.hwamaihelper.client.screens;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import fi.dy.masa.malilib.gui.GuiBase;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.CharacterEvent;
@@ -19,7 +20,7 @@ import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class ItemSelectionScreen extends Screen {
+public class ItemSelectionScreen extends GuiBase {
     private final Screen parent;
     private final Consumer<String> onSelect;
     private EditBox searchBox;
@@ -31,13 +32,15 @@ public class ItemSelectionScreen extends Screen {
     private final int slotSize = 20;
 
     public ItemSelectionScreen(Screen parent, Consumer<String> onSelect) {
-        super(Component.literal("選擇物品"));
+        setTitle("選擇物品");
+        setParent(parent);
         this.parent = parent;
         this.onSelect = onSelect;
     }
 
     @Override
-    protected void init() {
+    public void initGui() {
+        super.initGui();
         // 動態計算佈局
         int availableWidth = this.width - 40;
         int availableHeight = this.height - 80; // 扣除頂部搜尋框與邊距
@@ -97,6 +100,7 @@ public class ItemSelectionScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(context, mouseX, mouseY, delta);
         // 渲染全螢幕背景暗化
         context.fill(0, 0, this.width, this.height, 0x80000000);
         
@@ -108,8 +112,6 @@ public class ItemSelectionScreen extends Screen {
         // 渲染容器背景
         context.fill(startX - 5, startY - 5, startX + gridWidth + 5, startY + gridHeight + 5, 0xCC000000);
         
-        searchBox.extractRenderState(context, mouseX, mouseY, delta);
-
         for (int i = 0; i < itemsPerRow * rowsPerPage; i++) {
             int index = i + scrollOffset * itemsPerRow;
             if (index >= filteredItems.size()) break;
@@ -139,7 +141,6 @@ public class ItemSelectionScreen extends Screen {
             }
         }
 
-        super.extractRenderState(context, mouseX, mouseY, delta);
     }
 
     @Override

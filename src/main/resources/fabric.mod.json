@@ -30,6 +30,7 @@
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
+    "malilib": ">=0.29.2",
     "minecraft": "${minecraft_version}"
   }
 }
