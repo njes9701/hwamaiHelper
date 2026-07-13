@@ -2,7 +2,7 @@ package org.NJ.hwamaihelper.client.screens;
 
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.Screen;
+import fi.dy.masa.malilib.gui.GuiBase;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -11,18 +11,19 @@ import net.minecraft.network.chat.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WorkstationScreen extends Screen {
+public class WorkstationScreen extends GuiBase {
     private final List<WorkstationButton> buttons = new ArrayList<>();
     private int guiLeft, guiTop;
     private final int windowWidth = 80; // 18*3 + padding
     private final int windowHeight = 80;
 
     public WorkstationScreen() {
-        super(Component.literal("工作方塊"));
+        setTitle("工作方塊");
     }
 
     @Override
-    protected void init() {
+    public void initGui() {
+        super.initGui();
         this.guiLeft = (this.width - windowWidth) / 2;
         this.guiTop = (this.height - windowHeight) / 2;
         this.buttons.clear();
@@ -51,6 +52,7 @@ public class WorkstationScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(context, mouseX, mouseY, delta);
         context.fill(0, 0, this.width, this.height, 0x80000000);
         
         // Draw Window Background
@@ -73,7 +75,6 @@ public class WorkstationScreen extends Screen {
              }
         }
         
-        super.extractRenderState(context, mouseX, mouseY, delta);
     }
 
     @Override

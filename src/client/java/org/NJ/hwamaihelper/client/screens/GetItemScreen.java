@@ -2,7 +2,7 @@ package org.NJ.hwamaihelper.client.screens;
 
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.Screen;
+import fi.dy.masa.malilib.gui.GuiBase;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -11,18 +11,19 @@ import net.minecraft.network.chat.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetItemScreen extends Screen {
+public class GetItemScreen extends GuiBase {
     private final List<ItemButton> buttons = new ArrayList<>();
     private int guiLeft, guiTop;
     private final int windowWidth = 80;
     private final int windowHeight = 80;
 
     public GetItemScreen() {
-        super(Component.literal("取得物品"));
+        setTitle("取得物品");
     }
 
     @Override
-    protected void init() {
+    public void initGui() {
+        super.initGui();
         this.guiLeft = (this.width - windowWidth) / 2;
         this.guiTop = (this.height - windowHeight) / 2;
         this.buttons.clear();
@@ -50,6 +51,7 @@ public class GetItemScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(context, mouseX, mouseY, delta);
         // Use fill instead of renderBackground to prevent blur shader crash
         context.fill(0, 0, this.width, this.height, 0x80000000);
         
@@ -73,7 +75,6 @@ public class GetItemScreen extends Screen {
              }
         }
         
-        super.extractRenderState(context, mouseX, mouseY, delta);
     }
 
     @Override
