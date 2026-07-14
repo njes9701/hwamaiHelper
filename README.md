@@ -6,7 +6,7 @@ HwamaiHelper is a Fabric client-side assistant mod designed for the Hwamai serve
 
 ## 版本資訊 (Version)
 
-* Mod Version: `1.4.0`
+* Mod Version: `1.4.1`
 * Minecraft: `26.2`
 * Fabric Loader: `0.19.3+`
 * Fabric API: `0.154.0+26.2`
@@ -45,8 +45,8 @@ HwamaiHelper is a Fabric client-side assistant mod designed for the Hwamai serve
 * Supports per-feature enable toggles and press/release trigger modes.
 * 可設定遊戲模式輪盤排除手持物，拿著指定物品時不觸發輪盤。
 * The game mode wheel can ignore activation while holding a configured excluded item.
-* 排除物可用物品選擇器設定，支援中文名、英文名與 ID 搜尋。
-* The excluded item can be selected through an item picker with Chinese, English, and ID search.
+* 排除物以 Minecraft 物品 ID 設定，例如 `minecraft:stick`。
+* Configure the excluded item with its Minecraft item ID, such as `minecraft:stick`.
 
 ### 創造模式英文搜尋 (Creative Mode English Search)
 
@@ -134,7 +134,7 @@ HwamaiHelper is a Fabric client-side assistant mod designed for the Hwamai serve
 1. 安裝 Minecraft `26.2` 對應的 Fabric Loader。
 2. 安裝 Fabric API `0.154.0+26.2`。
 3. 安裝 MaLiLib `0.29.2+`；此為必要依賴，不能省略。
-4. 將 `hwamaiHelper-1.4.0.jar`、Fabric API 與 MaLiLib 放入 `.minecraft/mods`。
+4. 將 `hwamaiHelper-1.4.1.jar`、Fabric API 與 MaLiLib 放入 `.minecraft/mods`。
 5. 啟動遊戲並加入伺服器。
 
 ## 設定檔 (Configuration)
