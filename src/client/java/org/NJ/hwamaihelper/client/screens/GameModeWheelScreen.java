@@ -55,7 +55,7 @@ public class GameModeWheelScreen extends GuiBase {
 
         // 3. 繪製選中區域的高亮
         if (selectedIndex != -1) {
-            drawSectorHighlight(context, centerX, centerY, radius, selectedIndex);
+            drawSectorHighlight(context, centerX, centerY, selectedIndex);
         }
 
         // 4. 繪製分割線
@@ -93,7 +93,7 @@ public class GameModeWheelScreen extends GuiBase {
         }
     }
 
-    private void drawSectorHighlight(GuiGraphicsExtractor context, int cx, int cy, int r, int index) {
+    private void drawSectorHighlight(GuiGraphicsExtractor context, int cx, int cy, int index) {
         int highlightColor = 0x22FFFFFF;
         int iconDist = 38;
         int hX = cx, hY = cy;

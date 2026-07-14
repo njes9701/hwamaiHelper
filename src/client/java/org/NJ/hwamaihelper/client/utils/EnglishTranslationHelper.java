@@ -68,10 +68,4 @@ public class EnglishTranslationHelper {
         return translations.getOrDefault(key, key);
     }
 
-    public static boolean hasTranslation(String key) {
-        if (!loaded) {
-            loadEnUs();
-        }
-        return translations.containsKey(key);
-    }
 }

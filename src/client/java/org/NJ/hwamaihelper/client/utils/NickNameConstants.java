@@ -8,34 +8,6 @@ import net.minecraft.ChatFormatting;
 import java.awt.Color;
 
 public class NickNameConstants {
-    public static String getEffectName(String effect) {
-        return switch (effect == null ? "" : effect) {
-            case "bold" -> "粗體";
-            case "italic" -> "斜體";
-            case "underlined" -> "底線";
-            case "strikethrough" -> "刪除線";
-            case "obfuscated" -> "混淆";
-            case "rainbow" -> "彩虹";
-            case "gradient" -> "漸層";
-            case "shadow" -> "陰影";
-            default -> "無";
-        };
-    }
-
-    public static String getNextEffect(String current) {
-        return switch (current == null ? "" : current) {
-            case "" -> "bold";
-            case "bold" -> "italic";
-            case "italic" -> "underlined";
-            case "underlined" -> "strikethrough";
-            case "strikethrough" -> "obfuscated";
-            case "obfuscated" -> "rainbow";
-            case "rainbow" -> "gradient";
-            case "gradient" -> "shadow";
-            default -> "";
-        };
-    }
-
     public static MutableComponent getPreview(NickSection s) {
         String text = (s.text == null || s.text.isEmpty()) ? "預覽文字" : s.text;
         int len = text.length();

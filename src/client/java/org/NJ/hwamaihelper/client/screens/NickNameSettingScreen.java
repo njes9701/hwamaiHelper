@@ -70,8 +70,7 @@ public class NickNameSettingScreen extends GuiBase {
         int centerX = (width / 2) + 15;
         int buttonY = (int) (60 + (manager.sections.size() * 24) - scrollAmount);
 
-        editor.refresh(manager, centerX, scrollAmount, this::refreshWidgets,
-                (index, x, y) -> openColorEditor(index, 1));
+        editor.refresh(manager, centerX, scrollAmount, this::refreshWidgets);
 
         actions.init(centerX - 22, buttonY, new ActionButtonBar.ActionCallbacks() {
             @Override
@@ -124,7 +123,6 @@ public class NickNameSettingScreen extends GuiBase {
             return;
         }
 
-        manager.activeColorIndex = sectionIndex;
         NickSection section = manager.sections.get(sectionIndex);
         String currentColor = colorTarget == 2
                 ? (section.has("shadow") ? section.shadowColor : section.color2)

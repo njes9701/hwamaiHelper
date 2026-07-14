@@ -1,18 +1,6 @@
 package org.NJ.hwamaihelper.client.utils;
 
-import java.awt.Color;
-
 public class ColorUtils {
-
-    public static String hsbToHex(float h, float s, float b) {
-        int rgb = Color.HSBtoRGB(h, s, b);
-        return String.format("#%06X", (0xFFFFFF & rgb));
-    }
-
-    public static float[] hexToHsb(String hexStr) {
-        int colorInt = hexToInt(hexStr);
-        return Color.RGBtoHSB((colorInt >> 16) & 0xFF, (colorInt >> 8) & 0xFF, colorInt & 0xFF, null);
-    }
 
     public static int hexToInt(String hex) {
         try {

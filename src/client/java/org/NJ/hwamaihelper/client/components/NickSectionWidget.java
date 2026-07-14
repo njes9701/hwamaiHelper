@@ -143,12 +143,6 @@ public class NickSectionWidget {
         }
     }
 
-    public void setY(int y) {
-        this.textField.setY(y);
-        this.removeBtn.setY(y);
-        for (EffectButton eb : effectButtons) eb.widget.setY(y);
-    }
-
     /**
      * 修正點：點擊邏輯需要明確處理 setFocused
      */

@@ -18,9 +18,6 @@ public class NJConfig {
     public String gameModeWheelKey = "alt";
     public String quickLandLevelingKey = "";
     
-    // 紀錄上次開啟的分頁索引 (0: 指令, 1: 設定, 2: 暱稱)
-    public int lastTabIndex = 0;
-
     // 每一筆功能的資料結構
     // --- 新增：功能開關設定 ---
     public boolean openMenuEnabled = true;
@@ -46,12 +43,6 @@ public class NJConfig {
         public Entry(String command, String key) {
             this.command = command;
             this.key = key;
-        }
-
-        public Entry(String command, String key, boolean onRelease) {
-            this.command = command;
-            this.key = key;
-            this.onRelease = onRelease;
         }
 
         public Entry(String command, String key, boolean onRelease, boolean enabled) {
@@ -80,13 +71,4 @@ public class NJConfig {
     // 儲存玩家編輯中的暱稱區段
     public List<NickSection> nickSections = new ArrayList<>();
 
-    // --- 狀態緩存區 (用於判斷是否需要重複執行指令) ---
-
-    // 重要：紀錄進入伺服器後是否已經完成「首次同步」
-    public boolean hasInitialized = false;
-
-    // 暱稱儲存相關
-    public String lastSavedNick = "";
-    public String selectedColorHex = "#FFFFFF";
-    public String lastSelectedEffect = "";
 }

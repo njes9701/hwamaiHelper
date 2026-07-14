@@ -2,7 +2,6 @@ package org.NJ.hwamaihelper.client.components;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.input.MouseButtonEvent;
 import org.NJ.hwamaihelper.client.logic.NickNameManager;
 import org.NJ.hwamaihelper.client.utils.NickSection;
 
@@ -13,12 +12,8 @@ public class NickEditorPanel {
     private final Minecraft client = Minecraft.getInstance();
     public final List<NickSectionWidget> sectionWidgets = new ArrayList<>();
 
-    public interface ColorPickerCallback {
-        void onPick(int index, int x, int y);
-    }
-
     public void refresh(NickNameManager manager, int centerX, double scrollAmount,
-                        Runnable onRefresh, ColorPickerCallback colorCallback) {
+                        Runnable onRefresh) {
         sectionWidgets.clear();
 
         for (int i = 0; i < manager.sections.size(); i++) {
@@ -50,26 +45,6 @@ public class NickEditorPanel {
                 w.extractRenderState(context, mouseX, mouseY, delta);
             }
         }
-    }
-
-    public boolean mouseClicked(MouseButtonEvent click, NickNameManager manager, ColorPickerCallback colorCallback) {
-        double mx = click.x(), my = click.y();
-
-        for (int i = 0; i < sectionWidgets.size(); i++) {
-            NickSectionWidget w = sectionWidgets.get(i);
-            int rectX = w.textField.getX() - 22;
-            int rectY = w.textField.getY();
-
-            if (mx >= rectX && mx <= rectX + 20 && my >= rectY && my <= rectY + 20) {
-                return false;
-            }
-
-            if (w.mouseClicked(click, true)) {
-                manager.activeColorIndex = i;
-                return true;
-            }
-        }
-        return false;
     }
 
     public void syncToManager(NickNameManager manager) {
